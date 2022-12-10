@@ -2,7 +2,7 @@
 title: Law
 description: 
 published: true
-date: 2022-12-10T07:49:44.494Z
+date: 2022-12-10T07:58:48.759Z
 tags: 
 editor: markdown
 dateCreated: 2022-12-10T03:43:45.109Z
@@ -11,6 +11,8 @@ dateCreated: 2022-12-10T03:43:45.109Z
 # 디지털포렌식 관련 법
 
 **1. 디지털 증거 수집 및 분석 규정**
+
+[DigitalEvidence](/ko/Law/DigitalEvidence)
 
 **2. 디지털 포렌식 수사관 인증심의위원회 운영 규정**
 
@@ -22,10 +24,15 @@ dateCreated: 2022-12-10T03:43:45.109Z
 - 자유심증주의
 - 증거, 위법수집증거배제원칙
 
+[CriminalProcedureLaw](/ko/Law/CriminalProcedureLaw)
+
 **4. 통신비밀보호법**
 - 제 9조의 3(압수/수색/검증의 집행에 관한 통지)
 - 제 13조 (범죄 수사를 위한 통신 사실 확인 자료 제공의 절차)
 - 제 13조의 3 (범죄 수사를 위한 통신 사실 확인 자료 제공의 통지)
+
+[PCSA](/ko/Law/PCSA)
+
 
 **5. 정보통신망 이용촉진 및 정보보호 등에 관한 법률**
 
@@ -36,3 +43,5 @@ dateCreated: 2022-12-10T03:43:45.109Z
 **8. 신용정보의 이용 및 보호에 관한 법률**
 
 
+## 관련 참조
+https://www.law.go.kr/
