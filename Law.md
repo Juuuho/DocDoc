@@ -2,7 +2,7 @@
 title: Law
 description: 
 published: true
-date: 2022-12-10T07:39:33.812Z
+date: 2022-12-10T07:49:44.494Z
 tags: 
 editor: markdown
 dateCreated: 2022-12-10T03:43:45.109Z
