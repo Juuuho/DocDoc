@@ -2,7 +2,7 @@
 title: DigitalEvidence
 description: 
 published: true
-date: 2022-12-10T04:43:25.067Z
+date: 2022-12-10T07:57:13.301Z
 tags: 
 editor: markdown
 dateCreated: 2022-12-10T04:42:14.754Z
@@ -332,3 +332,6 @@ dateCreated: 2022-12-10T04:42:14.754Z
 
 제2조(존속기한) 이 규정은 「훈령·예규 등의 발령 및 관리에 관한 규정」에 따라 발령 후 법령이나 현실 여건의 변화 등을 검토하여야 하는 2024. 1. 1.까지 효력을 가진다.
 
+
+## 관련 참조
+https://www.law.go.kr/%ED%96%89%EC%A0%95%EA%B7%9C%EC%B9%99/%EB%94%94%EC%A7%80%ED%84%B8%EC%A6%9D%EA%B1%B0%EC%9D%98%EC%88%98%EC%A7%91%C2%B7%EB%B6%84%EC%84%9D%EB%B0%8F%EA%B4%80%EB%A6%AC%EA%B7%9C%EC%A0%95/(1151,20210101)
