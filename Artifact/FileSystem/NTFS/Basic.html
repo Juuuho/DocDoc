@@ -1,0 +1,792 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:17:43.505Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-10T05:51:28.838Z
+-->
+
+<h1>NTFS</h1>
+<p>NTFS란 Microsoft 사의 파일 시스템으로써, New Technology File System의 준말입니다. 최대 255자의 파일 이름을 사용할 수 있고, 설계 당시에는 최대 2<sup>64</sup>−1개의 클러스터를 사용할 수 있도록 설계되었지만, 실질적으로는 최대 2<sup>32</sup>−1개의 클러스터를 사용할 수 있습니다. 따라서, 실질적으로는 약 16TB를 최대 파일 크기로 가질 수 있습니다.&nbsp;</p>
+<p>NTFS의 대략적인 구조는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>BR</td>
+        <td>MFT</td>
+        <td>Data</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>BR은 Boot Record의 약자로 Sector 당 Byte 수, Cluster 당 Sector 수, 볼륨의 크기, MFT의 위치 등의 정보를 확인할 수 있습니다.</p>
+<p>MFT는 Master File Table의 약자로, NTFS 파일 시스템에 존재하는 모든 파일과 디렉토리의 정보를 관리하는 역할을 수행합니다. &nbsp;이 영역은 통계적으로, 약 12.5 %의 크기를 차지하고 있습니다.</p>
+<p>Data는 실제 파일의 정보가 저장되어 있는 영역을 의미합니다.</p>
+<p>순서대로 관련 내용을 자세히 살펴보겠습니다.</p>
+<h2>BR</h2>
+<p>&nbsp;</p>
+<figure class="image"><img src="/mft/mft2.png"></figure>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Position(hex)</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>Jump Command</td>
+        <td>&nbsp;0 - 2&nbsp;</td>
+        <td>&nbsp;Boot Code로 이동하는 Code</td>
+      </tr>
+      <tr>
+        <td>OEM ID</td>
+        <td>3 - 10</td>
+        <td>&nbsp;파일 시스템의 OEM ID</td>
+      </tr>
+      <tr>
+        <td>Byte Per Sector</td>
+        <td>11 - 12</td>
+        <td>Sector 당 Byte 수&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Sectors Per Cluster</td>
+        <td>13&nbsp;</td>
+        <td>Cluster 당 Sector 수&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Reserved</td>
+        <td>14 - 15&nbsp;</td>
+        <td>이 값은 반드시 0으로 저장.</td>
+      </tr>
+      <tr>
+        <td>Media</td>
+        <td>21&nbsp;</td>
+        <td>이 값은 플로피 디스크를 제외한 모든 경우에 0xF8으로 저장</td>
+      </tr>
+      <tr>
+        <td>Total Sector</td>
+        <td>&nbsp;40 - 47</td>
+        <td>볼륨 상의 총 Sector 수&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Start of MFT</td>
+        <td>48 - 55&nbsp;</td>
+        <td>MFT의 시작 Cluster</td>
+      </tr>
+      <tr>
+        <td>Start of MFT Mirror</td>
+        <td>56 - 63&nbsp;</td>
+        <td>MFT Mirror의 시작 Cluster</td>
+      </tr>
+      <tr>
+        <td>MFT Entry Size</td>
+        <td>64&nbsp;</td>
+        <td>&nbsp;MFT Entry의 크기</td>
+      </tr>
+      <tr>
+        <td>Index Record Size</td>
+        <td>68</td>
+        <td>Index Record의 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Serial Number</td>
+        <td>72&nbsp;- 79&nbsp;</td>
+        <td>&nbsp;컴퓨터의 고유 식별 번호</td>
+      </tr>
+      <tr>
+        <td>Signature</td>
+        <td>510 - 511</td>
+        <td>일반적으로 0xAA55가 저장되어 있음.&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>MFT</h2>
+<p>MFT의 위치는 고정되어 있지 않으나, 일반적으로 Boot Record 바로 뒤에 위치합니다. 또한 크기 역시 파일 시스템에 저장된 정보에 따라 다르지만, 일반적으로 12.5%의 용량을 차지합니다. MFT는 Entry 구조로 구성되어 있습니다. Entry는 다시 Header와 Attributes 등으로 나뉘어 구성됩니다. 일반적인 MFT Entry의 구조는 다음 그림과 같습니다.</p>
+<figure class="image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXWaiv8e5qJX4unhddk0d7Dd9yf-8572Fxzw&amp;usqp=CAU" alt="MFT Entry Attribute Concepts | NTFS Concepts"></figure>
+<ul>
+  <li>MFT의 Entry는 1024 (byte)의 크기를 고정으로 가집니다. 따라서 일반적인 분석 환경이라면 MFT Entry는 2개의 Sector를 크기로 하지만, 1개의 Sector 크기가 512byte가 아닌 경우에는 변동이 있을 수 있습니다.</li>
+</ul>
+<h2>MFT Entry(Header)</h2>
+<p>다음 그림은 MFT Entry의 Header 구조를 나타낸 것입니다.</p>
+<figure class="image"><img src="/mft/mft1.png"></figure>
+<p>순서대로, 각각이 의미하는 바는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Position</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0 - 3</td>
+        <td>Signature</td>
+        <td>MFT의 시작을 알리는 Signature</td>
+      </tr>
+      <tr>
+        <td>4 - 5</td>
+        <td>Offset to fixup array</td>
+        <td>Fixup array의 위치</td>
+      </tr>
+      <tr>
+        <td>6 - 7</td>
+        <td>Number of entries in fixup array</td>
+        <td>Fix up array의 Entry 개수</td>
+      </tr>
+      <tr>
+        <td>8 - 15</td>
+        <td>$Logfile LSN</td>
+        <td>$Logfile의 고유 번호(Index)</td>
+      </tr>
+      <tr>
+        <td>16 - 17</td>
+        <td>Sequence Number</td>
+        <td>MFT Entry의 순서를 나타내는 값</td>
+      </tr>
+      <tr>
+        <td>18 - 19</td>
+        <td>Link Count</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>20 - 21</td>
+        <td>Offset to first Attribute</td>
+        <td>첫 번째 속성의 위치</td>
+      </tr>
+      <tr>
+        <td>22 - 23</td>
+        <td>Flags</td>
+        <td>MFT Entry의 속성 정보를 나타내는 값</td>
+      </tr>
+      <tr>
+        <td>24 - 27</td>
+        <td>Used Size of MFT Entry</td>
+        <td>MFT Entry의 물리적 크기</td>
+      </tr>
+      <tr>
+        <td>28 - 31</td>
+        <td>Allocated Size of MFT Entry</td>
+        <td>MFT Entry의 할당 크기</td>
+      </tr>
+      <tr>
+        <td>32 - 39</td>
+        <td>File Reference to base Record</td>
+        <td>Base Record의 MFT Entry 주소</td>
+      </tr>
+      <tr>
+        <td>40 - 41</td>
+        <td>Next Attribute ID</td>
+        <td>다음 속성 ID (Header 포함 X)</td>
+      </tr>
+      <tr>
+        <td>42 - 1023</td>
+        <td>Attributes and fixup areas</td>
+        <td>속성 정보와 Fix up array (Header 포함 X)</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<ul>
+  <li>Fix up Array란 NTFS의 파일 저장에 대한 신뢰성을 높이기 위한 기능이다. 파일의 정보 일부를 기존의 위치 대신 Fix up Array에 저장하여 혹시 모를 오류로 인한 왜곡을 확인할 수 있도록 하는 기능입니다.</li>
+</ul>
+<p>실제 데이터를 통해 해당 정보를 분석하는 방법을 살펴보겠습니다.</p>
+<figure class="image"><img src="/ntfs/ntfs.png">
+  <figcaption>NTFS의 Fix up Arry</figcaption>
+</figure>
+<p>빨강 : Fix - up Array의 Offset</p>
+<p>파랑 : Fix - up Array의 개수 (3개, 각 2byte)</p>
+<p>주황 : Fix - up Array의 Signature (0x CE 05)</p>
+<p>노랑, 초록, &nbsp;갈색 : 원본의 값</p>
+<p>Fix up array의 Signature를 확인 시, Fix up array가 적용된 위치의 Offset을 찾아 값을 각각 0x00, 0x00, 0x00으로 바꾸어주면 원본 데이터의 값을 찾을 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>MFT Attribute</h2>
+<p>MFT는 Entry에 다양한 속성들을 부여하고 속성에 따른 값을 저장합니다. 앞 서 살펴본 그림과 도표처럼, MFT의 Entry 헤더는 공통적으로 42byte의 크기를 가집니다. 그 후 속성에 따라서 저장하는 정보는 달라집니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Value</td>
+        <td>Name</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>16(0x10)</td>
+        <td>$STANDARD_INFORMATION</td>
+        <td>&nbsp;NTFS 파일 시스템에 존재하는 모든 파일/디렉토리에 존재하는 속성입니다. 파일의 생성 시간과 날짜, Security ID와 Owner ID를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>32(0x10)</td>
+        <td>$ATTRIBUTE_LIST</td>
+        <td>&nbsp;기본적인 속성 외의, 추가적인 속성들의 목록을 저장합니다.</td>
+      </tr>
+      <tr>
+        <td>48(0x10)</td>
+        <td>$FILE_NAME</td>
+        <td>&nbsp;파일/디렉토리의 이름을 저장하고 있는 속성입니다. Standard Information과 마찬가지로 MAC Time을 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>64(0x10)</td>
+        <td>$VOLUME_VERSION</td>
+        <td>NTFS 파일 시스템의 볼륨 정보를 저장합니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>64(0x10)</td>
+        <td>$OBJECT_ID</td>
+        <td>파일/디렉토리의 고유 식별자를 저장하고 있습니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>80(0x10)</td>
+        <td>$SECURITY_DESCRIPTOR</td>
+        <td>보안 정보에 대한 내용, 접근 제어를 수행하는 속성입니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>96(0x10)</td>
+        <td>$VOLUME_NAME</td>
+        <td>NTFS 파일 시스템의 볼륨명을 저장합니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>112(0x10)</td>
+        <td>$VOLUME_INFORMATION</td>
+        <td>&nbsp;NTFS 파일 시스템의 볼륨 버전과 정보를 저장합니다.</td>
+      </tr>
+      <tr>
+        <td>128(0x10)</td>
+        <td>$DATA</td>
+        <td>&nbsp;파일의 실제 내용을 저장하는 속성입니다.</td>
+      </tr>
+      <tr>
+        <td>144(0x10)</td>
+        <td>$INDEX_ROOT</td>
+        <td>Index Tree의 Root 노드 정보를 저장합니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>160(0x10)</td>
+        <td>$INDEX_ALLOCATION</td>
+        <td>Index Tree의 노드 할당 정보를 저장합니다.</td>
+      </tr>
+      <tr>
+        <td>176(0x10)</td>
+        <td>$BITMAP</td>
+        <td>$MFT와 Index 할당 정보를 &nbsp;저장합니다.</td>
+      </tr>
+      <tr>
+        <td>192(0x10)</td>
+        <td>$SYMBOLIC_LINK</td>
+        <td>&nbsp;Symbolic link 정보를 저장합니다.</td>
+      </tr>
+      <tr>
+        <td>192(0x10)</td>
+        <td>$REPARSE_POINT</td>
+        <td>Soft Link 위치 정보를 저장합니다.</td>
+      </tr>
+      <tr>
+        <td>208(0x10)</td>
+        <td>$EA_INFORMATION</td>
+        <td>응용 프로그램과의 호환성을 위해 사용되는 영역입니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>224(0x10)</td>
+        <td>$EA</td>
+        <td>응용 프로그램과의 호환성을 위해 사용되는 영역입니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>256(0x10)</td>
+        <td>$LOGGED_UTILITY_STREAM</td>
+        <td>암호화된 속성 정보를 저장합니다.&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<ul>
+  <li>이 모든 속성들이 MFT 속성으로 활용되는 것은 아닙니다. 대개 $Standard_Information, $File_Name, $Data 3가지 속성만이 활용됩니다.</li>
+  <li>속성에 따라, 속성의 Content 내용의 크기는 차이가 날 수 있습니다. 이 때, NTFS는 속성의 Content가 약 700 바이트 이상이라면, Non-Resident 방식으로 저장합니다. 저장 방식은 Resident와 Non-Resident 2가지로 나뉘는데, Non-Resident방식이란 속성의 Content를 MFT Entry 내부가 아닌 Data 영역에 저장하는 방식을 의미합니다.<br>&nbsp;</li>
+</ul>
+<h3>Resident</h3>
+<p>모든 MFT Entry는 공통된 MFT Header 형식을 가지고 있습니다. 다만 MFT 속성 Header의 경우 저장 방식에 따라서 그 형식이 바뀌는데, 이를 살펴보겠습니다. 먼저 Resident 방식의 Header입니다. 하단의 그림을 통해 구조를 살펴보겠습니다.</p>
+<figure class="image"><img src="/mft/mft_common.png">
+  <figcaption>MFT Resident 방식의 Header</figcaption>
+</figure>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Position(Offset)</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>공통 헤더</td>
+        <td>0 - 15</td>
+        <td>&nbsp;-</td>
+      </tr>
+      <tr>
+        <td>Attribute Data Size</td>
+        <td>16 - 19</td>
+        <td>속성 내용의 크기</td>
+      </tr>
+      <tr>
+        <td>Attribute Data Start Offset</td>
+        <td>20 - 21</td>
+        <td>속성 내용의 시작 위치&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Index Flag</td>
+        <td>22</td>
+        <td>Indexed Flag</td>
+      </tr>
+      <tr>
+        <td>Not Used</td>
+        <td>23</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Attribute Name</td>
+        <td>24 &nbsp;- 파일에 따라 다름</td>
+        <td>속성 이름&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Attribute Data</td>
+        <td>파일에 따라 다름</td>
+        <td>속성 내용&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h3>Non-Resident</h3>
+<p>Non - Resident방식의 경우 Resident 방식의 헤더와 차이가 있음을 알 수 있습니다.</p>
+<figure class="image"><img src="/mft/mft_nonresi.png">
+  <figcaption>MFT Non Resident 방식의 Header</figcaption>
+</figure>
+<p>Resident 방식의 Header보다 추가된 요소가 있음을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Position(Offset)</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>공통 헤더</td>
+        <td>0 - 15</td>
+        <td>&nbsp;-</td>
+      </tr>
+      <tr>
+        <td>Runlist의 시작 Virtual Cluster Number</td>
+        <td>16 -23</td>
+        <td>런 리스트 시작 VCN</td>
+      </tr>
+      <tr>
+        <td>Runlist의 끝 Virtual Cluster Number</td>
+        <td>24 - 31</td>
+        <td>런 리스트 끝 VCN&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Runlist의 시작 Offset</td>
+        <td>32 - 33</td>
+        <td>런 리스트 시작 위치&nbsp;</td>
+      </tr>
+      <tr>
+        <td>압축 단위 크기</td>
+        <td>34 - 35</td>
+        <td>압축 단위 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Not Used.</td>
+        <td>36 - 39</td>
+        <td>사용되지 않음&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Attribute Data 할당 크기</td>
+        <td>40 - 47</td>
+        <td>속성 내용 할당 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Attribute Data의 물리적 크기</td>
+        <td>48 - 55</td>
+        <td>속성 내용 실제 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Attribute Data의 초기화 크기</td>
+        <td>56 - 63</td>
+        <td>속성 내용 초기화된 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Attribute Name</td>
+        <td>64 - 파일에 따라 다름</td>
+        <td>속성 이름&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Attribute Data</td>
+        <td>파일에 따라 다름</td>
+        <td>속성 내용&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h3>Cluster Run</h3>
+<p>Cluster Run이란, NTFS 파일시스템이 정보를 저장할 때 위치를 표현하는 방식을 의미합니다. 앞서 Non-Resident 방식에 대해 설명한 바 있습니다. 이 때 정보를 MFT Entry 내부가 아닌 Data 영역에 저장할 때, Cluster Run을 분석한다면 저장되어 있는 위치를 확인할 수 있습니다. 관련 예시를 통해 살펴보겠습니다.</p>
+<figure class="image"><img src="/mft/mft3.png"></figure>
+<p>이 경우, Cluster Run의 길이는 3byte, Cluster Run의 Offset은 3byte라는 의미입니다.</p>
+<p>Cluster Run Length : 0x50A800(Little Endian)</p>
+<p>Cluster Run Offset : 0x00000C(Little Endian)</p>
+<p>이 경우 43088(0xA850, Big Endian)개의 Cluster가 0x0C0000의 Offset부터 할당되어 있음을 의미합니다.</p>
+<p>&nbsp;</p>
+<h2>MFT Entry - 속성 별</h2>
+<figure class="image"><img src="/mft/mft4.png">
+  <figcaption>대표적인 MFT Header 구조인 $Standard Information, $File Name, $Data 속성을 가진 MFT Entry</figcaption>
+</figure>
+<p>상단의 그림 중 회색은 MFT 공통 Header를, 주황색은 $Standard Information을, 보라색은 $File Name을, 분홍색은 $Data를 나타냅니다. 이 때, 앞 서 살펴본 Resident 방식의 적용 여부는 $Data의 9번째 offset의 값에서 확인할 수 있습니다. 현재는 해당 Offset의 값이 0이기이에, Resident 방식으로 정보를 저장하고 있고, 해당 헤더 뒤에 바로 Data가 저장되어 있음을 알 수 있습니다.</p>
+<p>&nbsp;</p>
+<p>다음으로, 실제 데이터를 통해 각각의 속성 Header에 대해 살펴보겠습니다.</p>
+<figure class="image"><img src="/mft/mft5.png">
+  <figcaption>MFT 공통 Header</figcaption>
+</figure>
+<p>MFT의 공통 Header 구조는 다음과 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0 - 3</td>
+        <td>4</td>
+        <td>Signature</td>
+      </tr>
+      <tr>
+        <td>4 - 5</td>
+        <td>2</td>
+        <td>Fix up Array가 위치하는 Offset</td>
+      </tr>
+      <tr>
+        <td>6 - 7</td>
+        <td>2</td>
+        <td>Fix up Array의 배열 크기</td>
+      </tr>
+      <tr>
+        <td>8 - 15</td>
+        <td>8</td>
+        <td>$Logfile Sequence Number</td>
+      </tr>
+      <tr>
+        <td>16 - 17</td>
+        <td>2</td>
+        <td>Sequence Number</td>
+      </tr>
+      <tr>
+        <td>18 - 19</td>
+        <td>2</td>
+        <td>Link Count</td>
+      </tr>
+      <tr>
+        <td>20 - 21</td>
+        <td>2</td>
+        <td>첫 속성의 Offset</td>
+      </tr>
+      <tr>
+        <td>22 - 23</td>
+        <td>2</td>
+        <td>Flags</td>
+      </tr>
+      <tr>
+        <td>24 - 27</td>
+        <td>4</td>
+        <td>실제 사용되는 MFT Entry의 크기</td>
+      </tr>
+      <tr>
+        <td>28 - 31</td>
+        <td>4</td>
+        <td>할당된 MFT Entry의 크기</td>
+      </tr>
+      <tr>
+        <td>32 - 39</td>
+        <td>8</td>
+        <td>Base Record의 크기</td>
+      </tr>
+      <tr>
+        <td>40 - 41</td>
+        <td>2</td>
+        <td>다음 속성 ID의 값</td>
+      </tr>
+      <tr>
+        <td>42 - 1023</td>
+        <td>-</td>
+        <td>속성 및 Fix up 값</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<figure class="image"><img src="/mft/mft6.png">
+  <figcaption>Standard Information의 공통 Header</figcaption>
+</figure>
+<p>Standard Information &nbsp;공통 Header 구조는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0 - 3</td>
+        <td>4</td>
+        <td>속성 Type</td>
+      </tr>
+      <tr>
+        <td>4- 7</td>
+        <td>4</td>
+        <td>속성의 전체 Size</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>1</td>
+        <td>Resident(0x00) / Non - Resident(0x01) 여부를 알리는 FLag</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>1</td>
+        <td>속성 이름 길이 값</td>
+      </tr>
+      <tr>
+        <td>10 - 11</td>
+        <td>2</td>
+        <td>속성 이름이 저장된 위치</td>
+      </tr>
+      <tr>
+        <td>12 - 13</td>
+        <td>2</td>
+        <td>Flags</td>
+      </tr>
+      <tr>
+        <td>14 - 15</td>
+        <td>2</td>
+        <td>속성 ID</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<figure class="image"><img src="/mft/mft8.png">
+  <figcaption>Standard Information의 Non - Resident Header</figcaption>
+</figure>
+<p>Standard Information Non - Resident Header 구조는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>16 - 19</td>
+        <td>4</td>
+        <td>속성 크기</td>
+      </tr>
+      <tr>
+        <td>20 - 21</td>
+        <td>2</td>
+        <td>속성의 내용이 위치한 값</td>
+      </tr>
+      <tr>
+        <td>22</td>
+        <td>1</td>
+        <td>Flag</td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>1</td>
+        <td>Not Used</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<figure class="image"><img src="/mft/mft10.png">
+  <figcaption>File Name의 공통 Header 및 Resident Header</figcaption>
+</figure>
+<p>File Name 속성의 공통 Header 구조는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0 - 3</td>
+        <td>4</td>
+        <td>속성 Type</td>
+      </tr>
+      <tr>
+        <td>4 - 7</td>
+        <td>4</td>
+        <td>속성의 Size</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>1</td>
+        <td>Resident(0x00) / Non - Resident(0x01) 여부를 알리는 Flag</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>1</td>
+        <td>속성 이름의 길이 값</td>
+      </tr>
+      <tr>
+        <td>10 - 11</td>
+        <td>2</td>
+        <td>속성 이름이 저장된 위치</td>
+      </tr>
+      <tr>
+        <td>12 - 13</td>
+        <td>2</td>
+        <td>Flags</td>
+      </tr>
+      <tr>
+        <td>14 - 15</td>
+        <td>2</td>
+        <td>속성 ID</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<figure class="image"><img src="/mft/mft11.png">
+  <figcaption>File Name의 Content</figcaption>
+</figure>
+<p>File Name 속성의 Content는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>24 - 29</td>
+        <td>6</td>
+        <td>부모 디렉터리의 Record Number</td>
+      </tr>
+      <tr>
+        <td>30 - 31</td>
+        <td>2</td>
+        <td>부모 디렉터리의 Seq. Number</td>
+      </tr>
+      <tr>
+        <td>32 - 39</td>
+        <td>8</td>
+        <td>파일 생성 시각</td>
+      </tr>
+      <tr>
+        <td>40 - 47</td>
+        <td>8</td>
+        <td>파일 마지막 수정 시각</td>
+      </tr>
+      <tr>
+        <td>48 - 55</td>
+        <td>8</td>
+        <td>MFT의 마지막 수정 시각</td>
+      </tr>
+      <tr>
+        <td>56 - 63</td>
+        <td>8</td>
+        <td>파일 마지막 접근 시각</td>
+      </tr>
+      <tr>
+        <td>64 - 71</td>
+        <td>8</td>
+        <td>파일 할당 크기</td>
+      </tr>
+      <tr>
+        <td>72 - 79</td>
+        <td>8</td>
+        <td>파일의 물리적 크기</td>
+      </tr>
+      <tr>
+        <td>80 - 83</td>
+        <td>4</td>
+        <td>Flags</td>
+      </tr>
+      <tr>
+        <td>84 - 87</td>
+        <td>4</td>
+        <td>EA, Reparse에 사용되는 공간</td>
+      </tr>
+      <tr>
+        <td>88</td>
+        <td>1</td>
+        <td>파일 이름 길이</td>
+      </tr>
+      <tr>
+        <td>89</td>
+        <td>1</td>
+        <td>파일 이름 공간</td>
+      </tr>
+      <tr>
+        <td>90 - 97</td>
+        <td>8</td>
+        <td>파일 이름</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>Data</h2>
+<p>Data는 MFT에서 관리하는 파일의 Meta Data등을 관리하는 것 과는 달리, “실제 데이터”를 저장하고 있는 영역입니다. 앞 서 살펴본 Resident, Non - Resident 방식에 따라 실제 데이터의 저장 위치가 달라집니다. &nbsp;대략적으로 700byte가 넘는 크기는 Non - Resident 방식으로 저장됩니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0 - 15</td>
+        <td>16</td>
+        <td>속성 헤더</td>
+      </tr>
+      <tr>
+        <td>16 -&nbsp;</td>
+        <td>가변적임</td>
+        <td>데이터</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>실제 데이터를 통해 살펴보겠습니다.</p>
+<figure class="image"><img src="/mft/mft_data_non.png">
+  <figcaption>MFT $Data, Non-Resident 방식으로 저장</figcaption>
+</figure>
+<p>상단의 그림 중 빨간 색으로 표시된 부분은 $Data 속성임을 확인할 수 있는 Header를 나타냅니다. 파랑색으로 표현된 부분은 Resident 방식으로 저장되었는지의 여부를 나타냅니다. 0x01이기에, Non - Resident 방식임을 알 수 있고, 보라색 부분은 상단에서 살펴보았던 Cluster Run 영역을 나타냅니다.&nbsp;</p>
+<p>정리하자면, 해당 $Data 속성은 Non - Resident 방식으로 저장되어, 0x 47 2E 6A의 Cluster에 저장되어 있음을 알 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>다운로드 흔적</h2>
+<figure class="image"><img src="/ntfs/ntfs_다운로드.png">
+  <figcaption>다운로드 흔적</figcaption>
+</figure>
+<p>$Logfile에서는 크롬 브라우저에서 다운로드 한 파일 정보도 확인할 수 있습니다.&nbsp;</p>
+<p>File Creation으로 파일이 생성되고, 크롬 브라우저에서 다운로드 한 파일은 crdownload 형식의 확장자를 가지는 것을 알 수 있습니다.</p>
+<p>또한, 해당 파일 이름이 로컬 상에서 변경되었을 때 Renaming File event로 웹에서 다운로드 한 파일 이름 변경 흔적을 추적할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/FileSystem/NTFS/Advanced">/ko/Artifact/FileSystem/NTFS/Advanced </a>에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>

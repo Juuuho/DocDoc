@@ -1,0 +1,78 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:12:36.600Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-08T06:52:23.085Z
+-->
+
+<h1>Outlook</h1>
+<p>Outlook 분석에서는 메일의 내용을 분석하는 것이 주를 이룹니다. Outlook은 &nbsp;OST, PST, MSG 파일로 생성되는 경우가 많으며, 분석 대상 PC의 해당 파일을 분석한다면 사용자의 메일 사용 내역을 확인할 수 있습니다. 본 페이지에서는 OST와 PST의 구성을 확인한 후 자세한 분석을 Advanced에서 진행합니다.</p>
+<p>&nbsp;</p>
+<h2>OST의 구성</h2>
+<figure class="image"><img src="/ost/ost1.png"></figure>
+<p>.OST 파일에서는 웹 메일과 관련한 기본적인 사항들을 모두 확인할 수 있습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>From</td>
+        <td>발신자</td>
+      </tr>
+      <tr>
+        <td>Subject</td>
+        <td>제목</td>
+      </tr>
+      <tr>
+        <td>To</td>
+        <td>수신자</td>
+      </tr>
+      <tr>
+        <td>Sent</td>
+        <td>발신 시각</td>
+      </tr>
+      <tr>
+        <td>Received</td>
+        <td>수신 시각</td>
+      </tr>
+      <tr>
+        <td>Size</td>
+        <td>메일의 크기</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>상단의 도표는 특정한 하나의 메일에서 확인할 수 있는 정보 목록입니다.</p>
+<p>이 외에도, 팀 채팅, 동기화 중 발생한 로그, 메모, 받은 편지함, 보관함, 보낸 편지함과 보낼 편지함, 연락처, 일정, 정크 메일과 지운 편지함 등 웹 메일과 관련된 다양한 정보를 확인할 수 있습니다.</p>
+<p>C:\Users\{사용자 계정 명}\AppData\Local\Microsoft\Outlook</p>
+<h2>PST의 구성</h2>
+<p>.PST 파일은 .OST 파일의 동기화 파일이기에, 구성 요소는 동일합니다. 다만 동기화 적용 여부에 따라 PST 파일에서 확인할 수 있는 웹 메일의 구조가 달라질 수 있음을 유의하여야 합니다.</p>
+<p>&nbsp;</p>
+<h2>MSG</h2>
+<p>.MSG 파일은 OST, PST 파일을 외부로 내보낼 때 사용되는 파일입니다. 해당 파일에는 일정, 약속, 작업 등의 정보와 함께 메일 헤더 등을 확인할 수 있습니다.</p>
+<figure class="image"><img src="/outlook/ost3.png">
+  <figcaption>MSG 파일 생성 방법 (Outlook - 파일 - 다른 이름으로 저장)</figcaption>
+</figure>
+<figure class="image"><img src="/outlook/ost2.png">
+  <figcaption>MSG 파일 생성 방법 (파일 형식을 .msg로 선택)</figcaption>
+</figure>
+<p>해당 과정을 거쳐 생성된 .msg 파일에서는 메일 헤더를 확인할 수 있습니다.&nbsp;</p>
+<p>다음은 실제 메일 헤더 데이터의 일부입니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/outlook/ost4.png">
+  <figcaption>메일 Header 일부</figcaption>
+</figure>
+<p>메일 관련 플랫폼 별 헤더의 차이는 존재하지만, 공통적인 구조는 다음과 같습니다.</p>
+<p>Received, From, Date, Message-ID, with, To 등이 그것입니다.</p>
+<p>Received의 경우, 메일을 발송한 서버와 메일을 수신하기 까지 경유한 서버를 의미합니다.</p>
+<p>From은 발신자를 의미하며, Date는 발신한 시각을 의미합니다.</p>
+<p>Message-ID는 메일 서버에서 메일을 관리함에 사용하는 일련 번호를 의미합니다.</p>
+<p>with와 To는 각각 사용된 메일 프로토콜과 수신자를 의미합니다.&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<p>&nbsp;더 자세한 사항은 <a href="/ko/Artifact/Outlook/Advanced">/ko/Artifact/Outlook/Advanced </a>에서 확인하실 수 있습니다.</p>

@@ -1,0 +1,225 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-04T09:34:40.667Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-08T10:54:53.814Z
+-->
+
+<h1>LNK</h1>
+<p>LNK는 특정한 파일의 원본 경로를 가리키는 파일입니다. 해당 아티팩트는 Windows 운영체제에서만 존재합니다. UNIX 등의 환경에서는 In 명령어를 활용하여 유사한 기능을 구현할 수 있습니다.&nbsp;</p>
+<p>&nbsp;</p>
+<h2>LNK의 필요성</h2>
+<p>LNK는 원본 파일의 경로, 생성 시간, 접근 시간, LNK 파일의 생성 시간, 접근 시간, Drive Serial Number, MAC 주소 등을 확인할 수 있는 아티팩트입니다. LNK를 분석한다면, 원본 파일에 대한 접근 정보를 확인함으로써 사용자의 행위를 추적할 수 있습니다. 또한 원본 파일이 삭제되더라도 LNK 파일은 직접 삭제하지 않는다면 컴퓨터에 지속적으로 남아있기에 사용자가 사용한 파일들의 존재를 간접적으로 입증할 수 있습니다. &nbsp;&nbsp;</p>
+<p>&nbsp;</p>
+<h2>LNK의 경로</h2>
+<p>LNK의 경로는 특정한 폴더로 지정되어 있지 않습니다. 원본 파일의 lnk 파일 각 각은 사용자 임의대로 수정이 가능하며, 이름과 경로, 파일 아이콘 등이 수정 대상입니다.</p>
+<p>&nbsp;</p>
+<h2>LNK 구성</h2>
+<figure class="image"><img src="/lnk/lnk1.png">
+  <figcaption>Eric Zimmerman의 LECMD 분석 결과 (1)</figcaption>
+</figure>
+<figure class="image"><img src="/lnk/lnk2.png">
+  <figcaption>Eric Zimmerman의 LECMD 분석 결과 (2)</figcaption>
+</figure>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>LNK File Name&nbsp;</td>
+        <td>LNK 파일의 이름을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Machine ID</td>
+        <td>LNK 파일이 생성된 컴퓨터의 Machine ID를 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>File Name</td>
+        <td>LNK 파일이 가리키는 원본 파일의 이름을 확인할 수 있습니다.</td>
+      </tr>
+      <tr>
+        <td>File Path</td>
+        <td>LNK 파일이 가리키는 원본 파일의 경로를 확인할 수 있습니다.</td>
+      </tr>
+      <tr>
+        <td>File Size</td>
+        <td>LNK 파일이 가리키는 원본 파일의 크기를 확인할 수 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Lnk Creation Time</td>
+        <td>LNK 파일이 생성된 시각을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Lnk Access Time</td>
+        <td>LNK 파일에 마지막으로 접근한 시각을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Lnk Modified Time</td>
+        <td>LNK 파일이 마지막으로 수정된 시각을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Target Creation Time</td>
+        <td>LNK 파일이 가리키는 원본 파일의 생성 시각을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Target Access Time</td>
+        <td>LNK 파일이 가리키는 원본 파일에 마지막으로 접근한 시각을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Target Modified Time</td>
+        <td>LNK 파일이 가리키는 원본 파일이 마지막으로 수정된 시각을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Drive Type</td>
+        <td>LNK 파일을 저장하고 있는 Drive의 종류를 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Volume Label</td>
+        <td>Volume에 지정된 고유한 문자열(이름)을 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Drive Serial Number</td>
+        <td>LNK 파일이 생성된 컴퓨터(Drive)의 Serial Number를 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>MAC Address</td>
+        <td>LNK 파일이 생성된 컴퓨터의 MAC 주소를 의미합니다.</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>LNK 분석</h2>
+<p>지금까지 LNK에 대한 기본적인 정보를 살펴보았습니다. 이제 LNK를 분석하는 과정에 대해 살펴보겠습니다. 분석에 사용한 도구는 LNK Parser입니다.</p>
+<figure class="image"><img src="/lnk/lnk4.png">
+  <figcaption>LNK Parser 분석 결과</figcaption>
+</figure>
+<p>분석 결과는 다음 도표를 통해 살펴보겠습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>LNKFileName</td>
+        <td style="height:17.4pt;width:53pt;">Autopsy 4.19.3.lnk</td>
+      </tr>
+      <tr>
+        <td>Machine ID</td>
+        <td>K0874</td>
+      </tr>
+      <tr>
+        <td>File Name</td>
+        <td>autopsy64.exe</td>
+      </tr>
+      <tr>
+        <td>FilePath</td>
+        <td>C:\Program Files\Autopsy-4.19.3\bin\autopsy64.exe</td>
+      </tr>
+      <tr>
+        <td>FileSize</td>
+        <td>273920</td>
+      </tr>
+      <tr>
+        <td>LNKCreationTime</td>
+        <td style="height:17.4pt;width:158pt;">2022-07-16 15:25</td>
+      </tr>
+      <tr>
+        <td>LNKAccessTime</td>
+        <td style="height:17.4pt;width:139pt;">2022-11-27 1:26</td>
+      </tr>
+      <tr>
+        <td>LNKWriteTime</td>
+        <td style="height:17.4pt;width:135pt;">2022-11-17 13:24</td>
+      </tr>
+      <tr>
+        <td>Target CreationTime</td>
+        <td style="height:17.4pt;width:124pt;">2021-12-17 14:58</td>
+      </tr>
+      <tr>
+        <td>Target AccesTime</td>
+        <td style="height:17.4pt;width:120pt;">2022-07-16 15:24</td>
+      </tr>
+      <tr>
+        <td>TargetWriteTime</td>
+        <td style="height:17.4pt;width:105pt;">2021-12-17 14:58</td>
+      </tr>
+      <tr>
+        <td>DriveType</td>
+        <td style="height:17.4pt;width:53pt;">DRIVE FIXED</td>
+      </tr>
+      <tr>
+        <td>VolumeLabel</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>DriveSerialNumber</td>
+        <td style="height:17.4pt;width:53pt;">d071202b</td>
+      </tr>
+      <tr>
+        <td>MAC Address</td>
+        <td style="height:17.4pt;width:53pt;">c4:03:a8:94:40:ed</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>분석 결과를 살펴보면, .lnk 파일과, 원본 파일의 기본적인 MAC 시간 정보에 대해 확인할 수 있습니다. 또한 Machine ID와 MAC 주소, Drive SerialNumber를 확인할 수 있는데 해당 정보가 분석 대상 컴퓨터의 정보와 일치하는지 확인해보겠습니다.</p>
+<p>우선 Machine ID입니다.</p>
+<figure class="image"><img src="/lnk/lnk5.png">
+  <figcaption>ipconfig를 통한 Machine ID 확인</figcaption>
+</figure>
+<p>해당 명령어를 통해 “K0874”가 Machine ID임을 확인하였습니다.</p>
+<figure class="image"><img src="/lnk/lnk8.png">
+  <figcaption>ipconfig를 통한 MAC 주소 확인</figcaption>
+</figure>
+<p>동일한 명령어를 통해 MAC 주소가 분석 결과와 동일함을 확인하였습니다.</p>
+<figure class="image"><img src="/lnk/lnk6.png">
+  <figcaption>vol을 통한 Volume Serial Number 확인</figcaption>
+</figure>
+<p>vol 명령어를 통해 D071-202B가 Volume Serial Number임을 확인하였습니다.</p>
+<figure class="image"><img src="/lnk/lnk7.png">
+  <figcaption>wmic 명령어를 통한 Disk Serial Number 확인</figcaption>
+</figure>
+<p>이 때, LNK의 Volume Serial Number와 혼동 될 수 있는 Disk Drive의 Serial Number를 구분할 필요가 있습니다. 분석 도구에서 도출하는 정보는 Disk Drive의 고유 번호가 아니라 Volume의 고유 번호입니다. 이는 즉, LNK의 고유 번호는 생성되는 볼륨을 기준으로 저장되며, 디스크를 기준으로 저장되지 않음을 알아야 합니다.</p>
+<p>&nbsp;</p>
+<p>이를 통해 분석자는 LNK 분석을 통해 다양한 사실을 확인할 수 있음을 알았습니다. &nbsp;분석을 응용한다면, 다음의 사실들을 확인할 수 있습니다.</p>
+<p>1. Drive Serial Number, MAC주소를 통해 분석 대상의 컴퓨터에서 생성된 LNK 파일과 외부 저장장치에서 생성된 LNK 파일을 구분할 수 있습니다.&nbsp;</p>
+<p>2. 원본 파일이 삭제되더라도 LNK 파일이 남아 있을 경우 LNK 파일에 저장된 원본 파일의 경로를 통해 원본 파일의 존재를 간접적으로 입증할 수 있습니다.</p>
+<p>3. LNK에 기록된 MAC 시간 정보를 확인하여 사용자가 해당 파일에 접근한 시각을 추정할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>관련 참조</h2>
+<p><a href="https://doc.datg.xyz/ko/Artifact/LNK/Advanced">Advanced | DocDoc_Digital Forensics Wiki (datg.xyz)</a></p>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Name</td>
+        <td>URL</td>
+        <td>Ver</td>
+      </tr>
+      <tr>
+        <td>LECMD</td>
+        <td><a href="https://ericzimmerman.github.io/#!index.md">Eric Zimmerman's tools</a></td>
+        <td>1.5.0.0</td>
+      </tr>
+      <tr>
+        <td>LNK Parser</td>
+        <td><a href="http://forensic.korea.ac.kr/tools.html">DFRC - Digital Forensic Research Center (korea.ac.kr)</a></td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/LNK/Advanced">/ko/Artifact/LNK/Advanced</a> 에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>

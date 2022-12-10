@@ -1,0 +1,91 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:05:12.851Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T11:05:08.341Z
+-->
+
+<h1>Recycle.bin</h1>
+<p>Recycle.bin은 Windows에 생성된 계정들이 휴지통에 넣었던 파일들을 확인할 수 있습니다. 또한 휴지통을 거쳐서 삭제한 기록에 대해서도 확인할 수 있는데 이 부분은 Advanced에서 설명을 진행하겠습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycle1.png">
+  <figcaption>Recycle.bin 내부 구조</figcaption>
+</figure>
+<p>Windows 운영체제에 있어 파일을 삭제할 경우, Shift + Del를 사용하여 삭제하지 않는 한, 바로 삭제되는 것이 아니라 휴지통을 거쳐서 삭제되게 됩니다. 이 때, 파일이 기록된 위치의 변화는 없으며 단지 NTFS의 $MFT 영역에 있어 Entry의 정보 변화만이 일어납니다. Recycle.bin(이하 휴지통)에서는 파일들을 계정 단위(SID)로 관리합니다.&nbsp;</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recyclebin/제목_없음.png">
+  <figcaption>Recycle.bin 내부 파일</figcaption>
+</figure>
+<p>Recycle.bin의 내부 파일은 위 사진처럼&nbsp;크게 두 종류가 생성됩니다.</p>
+<p>$I{Random Stirng}, $R{Random String)</p>
+<p>$I와 $R은 한 쌍(Random String이 같음)을 이루고 있습니다. $R은 원본 파일 그 자체를 의미하며, $I는 $R의 경로와 원본 파일 이름 데이터를 가지고 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recyclei.png">
+  <figcaption>Recycle.bin 중 $I 파일의 저장 정보</figcaption>
+</figure>
+<p>$I의 경우 그림에서 확인할 수 있는 것처럼, $I 파일에서는 삭제된 파일의 크기와, 삭제된 시간, 파일 경로의 길이와 파일 경로를 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycler.png">
+  <figcaption>Recycle.bin 중 $R 파일의 저장 정보</figcaption>
+</figure>
+<p>$R의 경우 그림에서 확인할 수 있는 것처럼, 파일이 삭제되더라도 원본 데이터는 그대로 저장되어 있음을 알 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>Recycle.bin의 필요성</h2>
+<p>사용자가 파일을 삭제할 시에, 바로 파일이 저장된 위치의 값이 제거되는 것이 아니라 삭제 여부만을 Flag로 표현하게 됩니다. 따라서 삭제되더라도 그 정보는 추가적인 왜곡이 없다면 컴퓨터에서 여전히 확인할 수 있습니다. 따라서, Recycle.bin을 분석한다면 사용자의 사용 기록과 삭제하려 한 파일들을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>Recycle.bin의 경로</h2>
+<p>C:\$Recycle.bin</p>
+<p>&nbsp;</p>
+<h2>Recycle.bin 의 구성</h2>
+<p>$Recycle.bin은 &nbsp;그 하위 폴더에 <strong>사용자의 SID</strong>로 폴더가 생성되어 있습니다. 또한 그 하위에는 각각의 파일 별로 $I, $R과 그 뒤에 임의로 구성된 문자열이 합쳐져 파일이 생성되어 있습니다.</p>
+<p>$R의 경우 파일의 그 원본 자체를 저장하고 있습니다.</p>
+<p>$I의 경우 파일에 대한 Meta Data를 저장하고 있습니다.</p>
+<p>종합한다면, Recycle.bin에서 확인할 수 있는 정보들은 다음과 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Size(byte)</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>$I Header</td>
+        <td>8</td>
+        <td>파일의 Signature</td>
+      </tr>
+      <tr>
+        <td>Deleted File Size</td>
+        <td>8</td>
+        <td>삭제된 파일의 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Deleted Time</td>
+        <td>8</td>
+        <td>파일이 삭제된 시각&nbsp;</td>
+      </tr>
+      <tr>
+        <td>File Destination Size</td>
+        <td>4</td>
+        <td>파일의 경로(문자열)의 크기&nbsp;</td>
+      </tr>
+      <tr>
+        <td>File Destination</td>
+        <td>파일에 따라 다름</td>
+        <td>파일의 경로&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<figure class="image"><img src="/recycle/recycle_7.png">
+  <figcaption>$I의 구조 분석</figcaption>
+</figure>
+<p>위의 사진은 $I의 구조에 따라 표시한 영역입니다. $I의 Header와, 삭제된 파일의 크기, 파일 삭제 시각, 파일의 경로 크기와 실제 경로를 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 &nbsp;<a href="/ko/Artifact/Recycle/Advanced">/ko/Artifact/Recycle/Advanced</a> 에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>

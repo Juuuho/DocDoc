@@ -1,0 +1,72 @@
+<!--
+title: Advanced
+description: 
+published: true
+date: 2022-12-02T11:06:43.092Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T11:07:54.789Z
+-->
+
+<h1>Prefetch</h1>
+<p>Basic에서는 Prefetch 아티팩트가 어떤 기능을 수행하는지, 어떠한 정보들을 확인할 수 있는지에 대해 살펴보았습니다.</p>
+<p>본 문서에서는 Prefetch를 분석하는 과정을 살펴볼 것입니다.</p>
+<p>&nbsp;</p>
+<h2>상세 분석</h2>
+<p>우선 첫번째로, 외부 저장 장치를 통한 응용 프로그램 실행 흔적 확인입니다.</p>
+<figure class="image"><img src="/prefetch/prefetch4.png">
+  <figcaption>Prefetch 분석을 통한 외부 저장 장치 확인(1)</figcaption>
+</figure>
+<p>분석을 위해 외부 저장 장치에서 BSTRINGS.exe를 실행하였습니다. 그 결과 상단의 사진에서 확인할 수 있는 것처럼, 일반적인 응용 프로그램의 최상단 경로가 C:/인 것과는 달리 해당 외부 저장 장치의 Volume ID가 경로가 지정되었음을 확인할 수 있습니다.</p>
+<figure class="image"><img src="/prefetch/prefetch6.png">
+  <figcaption>Prefetch 분석을 통한 외부 저장 장치 확인(2)</figcaption>
+</figure>
+<p>또 다른 예시를 살펴보겠습니다. 앞 선 경우와 동일하게, 최상단 경로가 C:/가 아닌 Volume Serial Number가 최상단 경로로 지정되어 있습니다.</p>
+<figure class="image"><img src="/prefetch/prefetch5.png">
+  <figcaption>Prefetch 경로 분석을 통한 외부 저장 장치 확인</figcaption>
+</figure>
+<p>볼륨 Label과 Serial Number를 확인할 수 있는 vol 명령어를 통해 확인한다면 실제로 “2CB2-5073”으로 분석 결과와 일치함을 확인할 수 있습니다.</p>
+<p>두번째는, Prefetch 분석을 통한 악성 프로그램 행위 추적입니다.</p>
+<figure class="image"><img src="/prefetch/prefetch7.png">
+  <figcaption>Prefetch 분석을 통한 악성 프로그램 행위 추적 (1)</figcaption>
+</figure>
+<p>위 사진의 경우, RUNTIMEBROKER.exe의 실행 경로가 일반적인 경우와 달리 C:\Windows\Temp\RUNTIMEBROKER.exe임을 확인하였습니다.</p>
+<figure class="image"><img src="/prefetch/prefetch8.png">
+  <figcaption>일반적인 RUNTIMEBROKER.exe의 실행 경로</figcaption>
+</figure>
+<p>정상적인 경우, 상단의 그림처럼 RuntimeBroker는 System32의 경로에서 실행됩니다.</p>
+<p>따라서 RUNTIMEBROKER는 현재 악성 프로그램이 정상 프로그램의 이름으로 위장하여 실행되었음을 추정할 수 있습니다.</p>
+<figure class="image"><img src="/prefetch/prefetch9.png">
+  <figcaption>RUNTIMEBROKER가 실행 시 참조하는 파일 목록</figcaption>
+</figure>
+<p>해당 응용 프로그램을 악성 프로그램으로 추정하고, 참조하는 목록을 살펴보았습니다. 이 때, R4STLSEXT.DLL이 정상 프로그램의 이름과 유사하게 위조되어 참조되고 있음을 확인하여 악성 프로그램임을 확인하였습니다. 원본 파일의 이름은 첫번째 목록에서 확인할 수 있듯 RASTLS.DLL.MUI입니다.</p>
+<p>&nbsp;</p>
+<h2>결과 및 마무리</h2>
+<figure class="image"><img src="/prefetch/prefetch10.png">
+  <figcaption>Prefetch 분석 도구인 Winprefetch 분석 결과 (1)</figcaption>
+</figure>
+<p>분석 결과를 종합적으로 살펴보겠습니다.</p>
+<p>응용 프로그램의 이름, 경로, prefetch 생성 시각, 마지막 수정 시각, 실행 횟수, 마지막 실행 시각 등을 확인할 수 있습니다.</p>
+<figure class="image"><img src="/prefetch/prefetch12.png">
+  <figcaption>Prefetch 분석 도구인 Winprefetch 분석 결과 (2)</figcaption>
+</figure>
+<p>이 외에도, 응용 프로그램이 참조하는 라이브러리, 모듈 등의 정보를 확인할 수 있습니다.</p>
+<p>참조하는 대상의 이름, 경로, 참조 순서(Index)를 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>이름</td>
+        <td>버전</td>
+        <td>URL</td>
+      </tr>
+      <tr>
+        <td>WinPrefetchView</td>
+        <td>1.3.7</td>
+        <td><a href="https://www.nirsoft.net">https://www.nirsoft.net</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

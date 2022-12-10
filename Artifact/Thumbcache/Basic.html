@@ -1,0 +1,97 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T10:57:32.185Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T11:06:03.817Z
+-->
+
+<h1>&nbsp;</h1>
+<h1>Thumbcache</h1>
+<p>Thumbcache란 사진, 동영상, pdf, &nbsp;PPT, HTML, ooxml 형식의 파일 등의 데이터를 미리 나타내어 보여주는 작은 이미지인, Thumbnail을 저장하고 있는 Artifact입니다.</p>
+<p>썸네일은 하나의 파일로 관리되지 않고, Thumbcache_##.db의 형식으로 해상도에 따라 구분 지어 관리됩니다.&nbsp;</p>
+<figure class="image"><img src="/thumbcache/thumbache6.png">
+  <figcaption>Thumbnail의 예시</figcaption>
+</figure>
+<p>사진에서 확인할 수 있는 것처럼, png파일의 원본을 미리 나타내는 기능을 수행하는 것이 Thumbnail입니다.</p>
+<h2>Thumbcache의 필요성</h2>
+<p>원본 파일의 삭제에도 Thumbcache에는 그 흔적이 남아 있기에 사용자의 행위를 분석함에 활용할 수 있습니다 .db에 한 번 저장된 파일은 원본 사진 등이 삭제된다고 하더라도 .db에서는 사용자가 직접 접근하여 삭제하지 않는 한 삭제되지 않기에 지속적으로 남아 있습니다.</p>
+<h2>Thumbcache의 경로</h2>
+<p>%UserProfile%\AppData\Local\Microsoft\Windows\Explorer</p>
+<p>&nbsp;</p>
+<h2>Thumbcache의 구성</h2>
+<p>thumbcache_xx.db : xx*xx Pixel 보다 작은 크기의 Thumbnail이 저장됩니다.</p>
+<figure class="image"><img src="/화면_캡처_2022-11-03_205137.png"></figure>
+<ul>
+  <li>xx는 32, 96, 256, 768, 1280 등 다양한 숫자로 나뉘어 관리됩니다.</li>
+</ul>
+<p>해당 파일들이 의미하는 바를 일부 살펴보겠습니다.</p>
+<p>thumbcache_idx.db : Thumbnail의 인덱스 정보</p>
+<p>thumbcache_32.db : 32 * 32 pixel보다 작은 Thumbnail을 저장합니다.&nbsp;</p>
+<p>thumbcache_96.db : 32 * 32 - 96 * 96 pixel 사이의 Thumbnail을 저장합니다.</p>
+<p>앞 서 살펴본 것처럼 Thumbcache 뒤의 숫자는 해상도(pixel)을 의미합니다.</p>
+<p>&nbsp;</p>
+<h2>Thumbnail의 구조</h2>
+<p>&nbsp;</p>
+<figure class="image"><img src="/thumbcache/thumbcache7.png">
+  <figcaption>Thumbnail의 구조</figcaption>
+</figure>
+<p>빨강색으로 표시된 부분은 Thumbcache의 Signature인 0x 43 4D 4D 4D</p>
+<p>노랑색으로 표시된 부분은 Thumbnail Entry의 크기인 0x 20</p>
+<p>초록색으로 표시된 부분은 ID</p>
+<p>보라색으로 표현된 부분은 Thumbnail File의 이름을 의미합니다.</p>
+<p>특정 데이터에 대해 살펴보았고, 이제 일반적인 파일의 구조에 대해 다음 도표를 통해 살펴보겠습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>0x00 - 0x03</td>
+        <td>4</td>
+        <td>“CMMM” Signature</td>
+      </tr>
+      <tr>
+        <td>0x04 - 0x07</td>
+        <td>4</td>
+        <td>Thumbnail Entry의 크기</td>
+      </tr>
+      <tr>
+        <td>0x08 - 0x0F</td>
+        <td>8</td>
+        <td>Unique ID</td>
+      </tr>
+      <tr>
+        <td>0x30 - 0x41</td>
+        <td>34</td>
+        <td>File Name</td>
+      </tr>
+      <tr>
+        <td>0x42 -</td>
+        <td>파일에 따라 다름</td>
+        <td>Thumbnail Data</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Name</td>
+        <td>URL</td>
+        <td>Ver</td>
+      </tr>
+      <tr>
+        <td>Thumbcache Viewer</td>
+        <td><a href="http://thumbcacheviewer.github.io/">Thumbcache Viewer - Extract thumbnail images from the thumbcache_*.db and iconcache_*.db database files.</a></td>
+        <td>1.0.3.7</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/Thumbcache/Advanced">/ko/Artifact/Thumbcache/Advanced </a>에서 확인하실 수 있습니다.</p>

@@ -1,0 +1,134 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:15:39.583Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T11:04:52.853Z
+-->
+
+<h1>JumpList</h1>
+<figure class="image"><img src="/jumplist/jumplist1.png"></figure>
+<p>Jumplist란, Windows OS 7부터 새로 등장한 아티팩트입니다. 작업 표시줄 등에 고정된 아이콘을 우 클릭 했을 시, 최근 작업한 항목 혹은 사용자가 직접 고정한 항목 등을 확인할 수 있는데 이것이 바로 Jumplist입니다.&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Jumplist의 중요성</h2>
+<p>해당 아티팩트를 분석한다면 사용자의 컴퓨터 사용 기록을 추적 가능합니다. 더욱이, 사용자가 직접 삭제하지 않는 이상 OS 설치 시점부터 분석 시점까지 로그를 삭제하지 않고 지속적으로 저장하고 있기에 분석의 가치가 높습니다.</p>
+<p>&nbsp;</p>
+<h2>Jumplist의 경로</h2>
+<p>최근에 사용한 목록(Recent), 사용자가 고정시킨 목록(Pinned)</p>
+<p>%UserProfile%\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations</p>
+<p>자주 사용되는 목록(Frequent)이나 작업(Task) 목록</p>
+<p>%UserProfile%\AppData\Roaming\Microsoft\Windows\Recent\CustomDestinations</p>
+<ul>
+  <li>각 경로는 응용프로그램 별로 고유의 ID를 가져 정보를 관리합니다.</li>
+</ul>
+<figure class="image"><img src="/jumplist/jumplist.png"></figure>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>&nbsp;Type</td>
+        <td>Meaning&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Recent</td>
+        <td>최근 사용자가 접근한 파일과 폴더를 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Frequent</td>
+        <td>사용자가 자주 접근한 파일과 폴더를 의미합니다.</td>
+      </tr>
+      <tr>
+        <td>Tasks</td>
+        <td>Media 파일, 문서 작성등의 작업을 의미합니다.&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Pinned</td>
+        <td>사용자가 직접 고정 시킨 파일과 폴더를 의미합니다.</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Jumplist의 구성</h2>
+<p>다음 두 사진은 Jumplist 분석 도구인 Jumplist Explorer의 분석 결과 일부 입니다.</p>
+<figure class="image"><img src="/jumplist/jump2.png">
+  <figcaption>EricZimmerman의 Jumplist Explorer 분석 결과(1)</figcaption>
+</figure>
+<figure class="image"><img src="/jumplist/jump1.png">
+  <figcaption>EricZimmerman의 Jumplist Explorer 분석 결과(2)</figcaption>
+</figure>
+<p>Jumplist에서 확인 가능한 정보들은 다음 도표와 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Type</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>Entry Number</td>
+        <td>**</td>
+      </tr>
+      <tr>
+        <td>Target Created On</td>
+        <td>분석 대상이 생성된 시각</td>
+      </tr>
+      <tr>
+        <td>Target Modified On</td>
+        <td>분석 대상이 마지막으로 수정된 시각</td>
+      </tr>
+      <tr>
+        <td>Target Accessed On</td>
+        <td>분석 대상에 마지막으로 접근한 시각</td>
+      </tr>
+      <tr>
+        <td>Absolute Path</td>
+        <td>분석 대상의 경로</td>
+      </tr>
+      <tr>
+        <td>Interaction Count</td>
+        <td>분석 대상에 접근한 횟수</td>
+      </tr>
+      <tr>
+        <td>Jumplist Type</td>
+        <td>AutomaticDestinations / CustomDestinations 중 해당하는 Type</td>
+      </tr>
+      <tr>
+        <td>App ID</td>
+        <td>App의 고유 식별자</td>
+      </tr>
+      <tr>
+        <td>File Size</td>
+        <td>파일의 크기</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2><br>분석 도구</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table style="background-color:rgb(255, 255, 255);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(207, 216, 220);border-left:1px solid rgb(207, 216, 220);border-right:1px solid rgb(207, 216, 220);border-top:1px solid rgb(207, 216, 220);padding:0.5rem 0.75rem;">Name</td>
+        <td style="border-bottom:1px solid rgb(207, 216, 220);border-left:1px solid rgb(207, 216, 220);border-right:1px solid rgb(207, 216, 220);border-top:1px solid rgb(207, 216, 220);padding:0.5rem 0.75rem;">URL</td>
+        <td style="border-bottom:1px solid rgb(207, 216, 220);border-left:1px solid rgb(207, 216, 220);border-right:1px solid rgb(207, 216, 220);border-top:1px solid rgb(207, 216, 220);padding:0.5rem 0.75rem;">Ver</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(207, 216, 220);border-left:1px solid rgb(207, 216, 220);border-right:1px solid rgb(207, 216, 220);border-top:1px solid rgb(207, 216, 220);padding:0.5rem 0.75rem;">Jumplist explorer</td>
+        <td style="border-bottom:1px solid rgb(207, 216, 220);border-left:1px solid rgb(207, 216, 220);border-right:1px solid rgb(207, 216, 220);border-top:1px solid rgb(207, 216, 220);padding:0.5rem 0.75rem;"><a href="https://ericzimmerman.github.io/#!index.md">Eric Zimmerman's tools</a></td>
+        <td style="border-bottom:1px solid rgb(207, 216, 220);border-left:1px solid rgb(207, 216, 220);border-right:1px solid rgb(207, 216, 220);border-top:1px solid rgb(207, 216, 220);padding:0.5rem 0.75rem;">1.5.0.0</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/JumpList/Advanced">/ko/Artifact/JumpList/Advanced</a> 에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>

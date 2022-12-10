@@ -1,0 +1,113 @@
+<!--
+title: Advanced
+description: 
+published: true
+date: 2022-11-28T11:05:17.143Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-08T09:32:37.662Z
+-->
+
+<h1>DOCX</h1>
+<p>docx는 Office Open XML(OOXML) 구조를 기반으로 합니다. 해당 구조는 zip 파일 형태로 압축된 XML 기반 파일 구조로써, xlsx, pptx도 동일한 구조를 가지고 있습니다.</p>
+<p>실제로 docx 파일의 확장자를 zip으로 변경한 뒤 정보를 확인한다면 그 구조를 살펴 볼 수 있습니다.</p>
+<figure class="image"><img src="/docx/docx4.png"></figure>
+<p>각각의 구조에 대해 살펴보겠습니다.</p>
+<h2>Content Types</h2>
+<p>우선 첫 번째로, Content Types 입니다.</p>
+<figure class="image"><img src="/docx/docx5.png"></figure>
+<p>해당 파일은 원본 파일(docx, xlsx, pptx)이 가지고 있는 part name과 content type을 기록하고 있습니다.&nbsp;</p>
+<p>그 중, 첫 번째에 기록되는 Part의 이름을 확인한다면 원본의 파일 확장자를 알 수 있습니다.</p>
+<ul>
+  <li>docx : &nbsp;/word/document.xml</li>
+  <li>xlsx : /xl/workbook.xml</li>
+  <li>pptx : /ppt/slides/slide1.xml</li>
+</ul>
+<p>&nbsp;</p>
+<h2>Rels(Relations)</h2>
+<figure class="image"><img src="/docx/docx6.png"></figure>
+<p>원본 파일(docx, xlsx, pptx)이 가지고 있는 Part와 Package의 관계성을 저장하고 있는 파일입니다.</p>
+<h2>docProps</h2>
+<p>해당 폴더에는 app.xml과 core.xml 파일이 존재합니다.</p>
+<figure class="image"><img src="/docx/docx7.png"></figure>
+<p>app.xml의 일부 입니다. 해당 파일은 단어와 페이지 수, 글자 수 등과 함께 App의 Version을 저장하고 있습니다.</p>
+<figure class="image"><img src="/docx/docx80.png"></figure>
+<p>core.xml 파일입니다. 해당 파일에서는 문서 파일의 생성 일자, 변경 일자, 작성자 등을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>word</h2>
+<p>해당 폴더는 _rels, media, theme 그리고 문서의 footnote와 style, font등 서식에 관련한 정보들을 저장하고 있습니다.</p>
+<p>word 폴더의 하위에 존재하는 media는 문서 안에 포함되어 있는 이미지 / 동영상 등의 미디어 파일들을 저장하고 있습니다.</p>
+<figure class="image"><img src="/docx/docx11.png">
+  <figcaption>word\media 폴더 구성 파일</figcaption>
+</figure>
+<p>실제로, 해당 경로 이동하여 내부 구성 파일들을 확인한다면 .docx 파일 내부에 있는 이미지 파일들이 존재함을 확인할 수 있습니다.</p>
+<figure class="image"><img src="/docx/docx12.png">
+  <figcaption>Theme1.xml</figcaption>
+</figure>
+<p>theme 폴더 안에는 theme1.xml 파일이 존재합니다. 해당 파일은 Word 프로그램이 사용하는 폰트에 관한 정보와, 색 구성표, 형식 구성표 등의 정보가 포함되어 있습니다.</p>
+<p>이 외에, &nbsp;word 파일을 구성하는 요소들은 다음과 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Name</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>Comments</td>
+        <td>문서의 주석을 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Document Settings</td>
+        <td>맞춤법, 문법 오류 숨기기, 수정 추적, 쓰기 보호 등 문서에 대한 설정을 저장하고있습니다.</td>
+      </tr>
+      <tr>
+        <td>Endnotes</td>
+        <td>문서의 미주를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Font Table</td>
+        <td>문서에 사용된 글꼴 정보를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Footer</td>
+        <td>바닥글에 대한 정보를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Footnotes</td>
+        <td>문서의 각주를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Glossary</td>
+        <td>문서 외적인 추가 설명 정보를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Header</td>
+        <td>문서의 머리글을 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Main Document</td>
+        <td>문서의 본문을 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Numbering Definitions</td>
+        <td>문서가 사용하는 번호 매기기 관련 정보를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Style Definitions</td>
+        <td>문서에서 사용하는 스타일 정보를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>Web Settings</td>
+        <td>문서에서 사용하는 웹 관련 설정 정의를 저장하고 있습니다.</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>상단의 구성 요소들은 문서 파일에 따라 존재 유무가 달라집니다.</p>
+<p>&nbsp;</p>

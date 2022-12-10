@@ -1,0 +1,85 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:04:44.001Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T10:58:46.558Z
+-->
+
+<h1>UserAssist</h1>
+<figure class="image"><img src="/userassist/userassist1.png"></figure>
+<p>UserAssist란, 사용자가 최근에 실행한 프로그램, 자주 사용하는 프로그램의 목록, 마지막 실행 날짜, 실행 횟수 등이 기록되어 있는 아티팩트입니다. &nbsp;해당 아티팩트는 레지스트리에 속해 있습니다.&nbsp;</p>
+<p>유의해야할 사항은, 정보를 저장하는 방식입니다. 상단의 그림을 살펴본다면, 일반적으로 확인할 수 있는 응용 프로그램의 이름과는 상이함을 알 수 있습니다. UserAssist에서 관리하는 이름은 ROT-13 방식으로 Encoding되어 있기에 이름을 직관적으로 확인할 수 없습니다. 따라서 원본 데이터(응용 프로그램의 이름)을 확인하기 위해서는 ROT-13 방식으로 동일하게 Decoding 과정을 거쳐준다면 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h3>UserAssist 경로</h3>
+<p>1. HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{F4E57C4B-2036-45F0-A9AB-443BCFE33D9F}\Count</p>
+<p>2. HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{CEBFF5CD-ACE2-4F4F-9178-9926F41749EA}\Count&nbsp;</p>
+<ul>
+  <li>CEBFF5CD-ACE2-4F4F-9178-9926F41749EA\Count의 경로에서는 실행 파일을 기록하고 있습니다.</li>
+  <li>F4E57C4B-2036-45F0-A9AB-443BCFE33D9F\Count의 경로에서는 바로가기의 실행을 기록하고 있습니다.</li>
+</ul>
+<p>3. HKU\{USER}\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\UserAssist</p>
+<ul>
+  <li>USER는 SID로 구분할 수 있습니다.</li>
+</ul>
+<h3>UserAssist 구성</h3>
+<p>&nbsp;</p>
+<figure class="image"><img src="/userassist/userassist11.png"></figure>
+<p>UserAssist의 영역이 의미하는 바를 살펴보겠습니다.</p>
+<p>파랑색으로 표시된 부분은 세션 번호를 의미합니다.</p>
+<p>빨간색으로 표시된 부분은 실행 횟수를 의미합니다.</p>
+<p>보라색으로 표시된 부분은 마지막 실행 횟수를 의미합니다.</p>
+<p>일반적으로 해당 영역이 의미하는 바는 다음 도표와 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0 - 3</td>
+        <td>세션 번호</td>
+      </tr>
+      <tr>
+        <td>4 - 7&nbsp;</td>
+        <td>실행 횟수</td>
+      </tr>
+      <tr>
+        <td>60 - 67</td>
+        <td>마지막 실행 시각</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>UserAssist 분석</h2>
+<p>UserAssist에 대한 기본적인 정보들을 살펴보았습니다. 이번에는 UserAssist를 분석하는 과정에 대해 살펴보겠습니다.</p>
+<figure class="image"><img src="/userassist/userassist4.png">
+  <figcaption>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{CEBFF5CD-ACE2-4F4F-9178-9926F41749EA}\Count&nbsp;의 경로</figcaption>
+</figure>
+<figure class="image"><img src="/userassist/userassist5.png">
+  <figcaption>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{F4E57C4B-2036-45F0-A9AB-443BCFE33D9F}\Count 의 경로</figcaption>
+</figure>
+<p>앞 서 살펴본 것처럼, UserAssist의 경로는 상단의 두 그림에서 확인할 수 있습니다.</p>
+<figure class="image"><img src="/userassist/userassist7.png">
+  <figcaption>ROT-13 방식으로 Encoding된 목록</figcaption>
+</figure>
+<p>앞 서, UserAssist의 경우 응용 프로그램의 경로와 이름을 ROT-13 방식으로 Encoding 하여 저장함을 확인한 바 있습니다. 하지만 영문자와 달리, 한글의 경우 Encoding 방식의 문제로 원문 그대로 저장함을 확인하였습니다.&nbsp;</p>
+<p>영문을 Decoding 하는 과정을 살펴보겠습니다. GnfxOne\교보rObbx.yax를 ROT-13 Decoder로 변환한 결과입니다.</p>
+<figure class="image"><img src="/userassist/userassist12.png">
+  <figcaption>ROT-13 Decode 결과</figcaption>
+</figure>
+<p>원문은 TaskBar\교보eBook.lnk 임을 확인하였습니다.</p>
+<p>&nbsp;</p>
+<p>이제 Registry의 Key에 저장된 UserAssist의 정보를 해석해보겠습니다.</p>
+<figure class="image"><img src="/userassist/userassist9.png"></figure>
+<p>세션 번호는 0x0F(=16)입니다. 실행된 횟수는 0x0B(=11)이며, 마지막으로 실행된 시각은 0x D0 4A E5 0F AF 01 D9 01(Little Endian)입니다.</p>
+<figure class="image"><img src="/userassist/userassist10.png"></figure>
+<p>해당 시각은 2022-11-27, 00:52:18 임을 확인하였습니다.</p>
+<p>&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/Registry/UserAssist/Advanced">/ko/Artifact/Registry/UserAssist/Advanced</a> 에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>

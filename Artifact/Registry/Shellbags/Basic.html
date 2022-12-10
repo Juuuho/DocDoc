@@ -1,0 +1,115 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:03:11.176Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T10:56:59.107Z
+-->
+
+<h1>ShellBag</h1>
+<p>Windows 운영체제에서 Local, Remote에서 사용자가 접근한 폴더 정보를 기록하고 있습니다. 다만 이 때, 사용자가 GUI 방식으로 접근하지 않고 CMD나 API 등의 방법들로 폴더에 접근하였다면 ShellBag에 기록되지 않습니다. 예를 들면, CMD의 cd 명령어를 통해 폴더에 접근했다면 ShellBag에 기록되지 않습니다. 원본 폴더가 삭제되더라도, Registry의 MRU에 기록된 정보는 삭제되지 않으므로 <strong>사용자가 접근했던 폴더에 대한 정보를 확인</strong>할 수 있습니다.</p>
+<p>&nbsp;</p>
+<p>&nbsp;Windows 운영체제의 Version 별로 기록하고 있는 경로가 상이한데, 본 문서는 Windows 10을 기준으로 서술되었습니다.</p>
+<p>&nbsp;</p>
+<h3>ShellBag의 경로</h3>
+<p>HKCU\Software\Classes\LocalSettings\Software\Microsoft\Windows\Shell\Bags</p>
+<p>(폴더의 목록과 GUID 등이 저장되어 있는 경로)</p>
+<p>HKCU\Software\Classes\LocalSettings\Software\Microsoft\Windows\Shell\BagMRU</p>
+<p>(폴더의 명칭과 접근 순서가 MRU 형식으로 저장되어 있는 경로)</p>
+<p>HKCU\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\Number(Diff by Folder)\Shell</p>
+<p>(폴더의 Type을 나타내는 다양한 GUID 값이 저장되어 있는 경로)</p>
+<p>&nbsp;</p>
+<h3>ShellBag의 구성</h3>
+<figure class="image"><img src="https://velog.velcdn.com/images%2Fhskang00%2Fpost%2F7e07cbc2-2afd-47af-9d06-587384521016%2Fimage.png">
+  <figcaption>Shellbag - BagMRU 키 구조</figcaption>
+</figure>
+<p>컴퓨터\HKEY_CURRENT_USER\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU의 경로에서는 사용자가 접근한 폴더에 관한 정보 목록을 확인할 수 있습니다. 사용자가 접근한 폴더의 순서를 알아보기 위해 MRU List를 확인해보겠습니다.&nbsp;</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/shellbag/shellbag1.png">
+  <figcaption>Shellbag - BagMRU의 MRU List</figcaption>
+</figure>
+<p>“MRUListEX”는 사용자가 접근한 폴더의 순서를 4바이트 단위로 끊어 기록하고 있습니다. 폴더는 16진수로 번호가 부여됩니다.</p>
+<p>0x00, 0x01, 0x96, 0x65, 0x8E, … 순서로 사용자가 최근에 접근한 폴더의 Index입니다. 가장 최근에 접근한 폴더가 가장 앞의 Offset의 위치에 기록됩니다. 또한 반대로 가장 오래전에 접근한 폴더는 맨 뒤의 &nbsp;Offset의 위치에 기록됩니다.&nbsp;</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/shellbag/shellbag2.png">
+  <figcaption>MRU List에 기록된 사용자가 접근한 폴더 정보</figcaption>
+</figure>
+<p>제일 최근에 접근한 1번 번호가 부여된 폴더의 정보를 확인하기 위해 1번 값을 확인한 정보입니다. 해당 정보는 “Shellbag - BagMRU 키 구조”에 존재합니다. 해당 값 또한 구조가 존재하며, 구조를 분석해서 정보를 추출하는 것은 Advanced에서 진행하겠습니다.</p>
+<p>&nbsp;</p>
+<h2>Shellbag의 확인 가능 정보</h2>
+<p>​ 1. 특정 폴더에 사용자가 접근한 시간</p>
+<p>​ 2. &nbsp;폴더의 삭제 등 왜곡에 대한 흔적</p>
+<p>​ 3. 파일 탐색기를 통한 폴더 접근의 MAC 시간 정보</p>
+<p>&nbsp;</p>
+<h2>ShellBag의 GUID 별 의미</h2>
+<p>Shellbag은 &nbsp;응용프로그램의 명칭을 그대로 사용하지 않고, GUID로 대체하여 정보를 기록합니다. 하단의 도표는 대표적인 응용 프로그램들의 GUID 목록입니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <p>{0b0ba2e3-405f-415e-a6ee-cad625207853} Searches &nbsp;</p>
+          <p>{0b2baaeb-0042-4dca-aa4d-3ee8648d03e5} Pictures.Library &nbsp;</p>
+          <p>{0c3794f3-b545-43aa-a329-c37430c58d2a} ControlPanelAllItems &nbsp;</p>
+          <p>{20338b7b-531c-4aad-8011-f5b3db2123ec} Contacts.SearchResults &nbsp;</p>
+          <p>{292108be-88ab-4f33-9a26-7748e62e37ad} Videos.LibraryFolder &nbsp;</p>
+          <p>{2c7bbec6-c844-4a0a-91fa-cef6f59cfda1} Printers &nbsp;</p>
+          <p>{36011842-dccc-40fe-aa3d-6177ea401788} Documents.SearchResults &nbsp;</p>
+          <p>{3d1d4ea2-1d8c-418a-bff8-f18370157b55} OtherUsers.SearchResults &nbsp;</p>
+          <p>{3f2a72a7-99fa-4ddb-a5a8-c604edf61d6b} Music.Library &nbsp;</p>
+          <p>{3f98a740-839c-4af7-8c36-5badfb33d5fd} Documents.LibraryFolder &nbsp;</p>
+          <p>{4dcafe13-e6a7-4c28-be02-ca8c2126280d} Pictures.SearchResults &nbsp;</p>
+          <p>{503a4e73-1734-441a-8eab-01b3f3861156} Communications.SearchResults &nbsp;</p>
+          <p>{524ddb2b-2a4f-43b8-b8fe-e91ef9d8ba69} Contacts.Library &nbsp;</p>
+          <p>{549461d3-eb58-4c80-ba29-f1204c4502c3} Internet</p>
+          <p>{57807898-8c4f-4462-bb63-71042380b109} Generic</p>
+          <p>{59bd6dd1-5cec-4d7e-9ad2-ecc64154418d} UsersLibraries.SearchResults &nbsp;</p>
+          <p>{5c4f28b5-f869-4e84-8e60-f11db97c5cc7} Generic &nbsp;</p>
+          <p>{5f4eab9a-6833-4f61-899d-31cf46979d49} Generic.Library &nbsp;</p>
+          <p>{5fa96407-7e77-483c-ac93-691d05850de8} Videos &nbsp;</p>
+          <p>{631958a6-ad0f-4035-a745-28ac066dc6ed} Videos.Library &nbsp;</p>
+          <p>{654a1b99-8a4b-4e7b-a4e1-46378ad77a61} Contacts.LibraryFolder &nbsp;</p>
+          <p>{6d9969ff-612f-48ef-9b90-853fd82e6ec2} Sync &nbsp;</p>
+          <p>{6ef8b050-8a6a-4d79-8344-9dfb5cf391fb} RestrictedNonIndexed &nbsp;</p>
+          <p>{71689ac1-cc88-45d0-8a22-2943c3e7dfb3} Music.SearchResults &nbsp;</p>
+          <p>{7d49d726-3c21-4f05-99aa-fdc2c9474656} Documents &nbsp;</p>
+          <p>{7f2f5b96-ff74-41da-afd8-1c78a5f3aea2} PublishedItems &nbsp;</p>
+          <p>{7fde1a1e-8b31-49a5-93b8-6be14cfa4943} Generic.SearchResults &nbsp;</p>
+          <p>{80213e82-bcfd-4c4f-8817-bb27601267a9} CompressedFolder &nbsp;</p>
+          <p>{834d8a44-0974-4ed6-866e-f203d80b3810} SearchHome &nbsp;</p>
+          <p>{8faf9629-1980-46ff-8023-9dceab9c3ee3} OpenSearch &nbsp;</p>
+          <p>{91475fe5-586b-4eba-8d75-d17434b8cdf6} Communications &nbsp;</p>
+          <p>{921c636d-9fc8-40d7-899e-0845dcd03010} PublishedItems.SearchResults &nbsp;</p>
+          <p>{94d6ddcc-4a68-4175-a374-bd584a510b78} Music &nbsp;</p>
+          <p>{978e0ed7-92d6-4cec-9b59-3135b9c49ccf} Music.LibraryFolder &nbsp;</p>
+          <p>{982725ee-6f47-479e-b447-812bfa7d2e8f} SearchConnector &nbsp;</p>
+          <p>{b337fd00-9dd5-4635-a6d4-da33fd102b7a} OtherUsers &nbsp;</p>
+          <p>{b3690e58-e961-423b-b687-386ebfd83239} Pictures &nbsp;</p>
+          <p>{b372207c-0011-438f-9151-098b2e36b887} FileItemAPIs</p>
+          <p>{b689b0d0-76d3-4cbb-87f7-585d0e0ce070} Games &nbsp;</p>
+          <p>{c1f8339f-f312-4c97-b1c6-ecdf5910c5c0} Pictures.LibraryFolder &nbsp;</p>
+          <p>{c4d98f09-6124-4fe0-9942-826416082da9} UsersLibraries &nbsp;</p>
+          <p>{cd0fc69b-71e2-46e5-9690-5bcd9f57aab3} UserFiles &nbsp;</p>
+          <p>{d674391b-52d9-4e07-834e-67c98610f39d} Programs &nbsp;</p>
+          <p>{da3f6866-35fe-4229-821a-26553a67fc18} Generic.LibraryFolder &nbsp;</p>
+          <p>{db2a5d8f-06e6-4007-aba6-af877d526ea6} AccountPictures &nbsp;</p>
+          <p>{de2b70ec-9bf7-4a93-bd3d-243f7881d492} Contacts &nbsp;</p>
+          <p>{de4f0660-fa10-4b8f-a494-068b20b22307} ControlPanelCategory &nbsp;</p>
+          <p>{e053a11a-dced-4515-8c4e-d51ba917517b} UserFiles.SearchResults &nbsp;</p>
+          <p>{ea25fbd7-3bf7-409e-b97f-3352240903f4} Videos.SearchResults &nbsp;</p>
+          <p>{ef87b4cb-f2ce-4785-8658-4ca6c63e38c6} StartMenu &nbsp;</p>
+          <p>{fbb3477e-c9e4-4b3b-a2ba-d3f5d3cd46f9} Documents.Library</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="https://doc.datg.xyz/ko/Artifact/Registry/Shellbags/Advanced">/ko/Artifact/Registry/Shellbags/Advanced</a> 에서 확인하실 수 있습니다.</p>
+<ul>
+  <li>Registry: <a href="/ko/Artifact/Registry/">/ko/Artifact/Registry/</a></li>
+</ul>
+<p>&nbsp;</p>

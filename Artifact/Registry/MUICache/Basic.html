@@ -1,0 +1,58 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:01:56.761Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T10:55:55.639Z
+-->
+
+<h1>MUICache</h1>
+<p>MUICache는 다중 언어를 지원하기 위해 프로그램 이름을 저장하는 기능을 수행합니다.</p>
+<p>가령, Windows의 기본 프로그램인 PaintBrush, Regedit, notepad 등은 그림판, 레지스트리 편집기와 메모장 등으로 수정되어 표현됩니다.</p>
+<p>이 외에도, 프로그램이 컴퓨터에서 한 번이라도 실행되었다면 사용자가 의도적으로 삭제할 때까지 응용프로그램 목록을 저장하고 있기에 분석 시점에 응용 프로그램이 삭제되었더라도 프로그램의 존재 여부, 경로를 추적할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>MUICache의 경로</h2>
+<p>HKEY_CURRENT_USER\Software\Classes\LocalSettings\Software\Microsoft\Windows\Shell\MuiCache</p>
+<h2>MUICache의 구성</h2>
+<p>다음 사진은 MUICache 분석 도구인 MUICacheView의 분석 결과 일부입니다.</p>
+<figure class="image"><img src="/mui/mui1.png">
+  <figcaption>MUICacheView 분석 결과 일부 (1)</figcaption>
+</figure>
+<figure class="image"><img src="/mui/mui2.png">
+  <figcaption>MUICacheView 분석 결과 일부 (2)</figcaption>
+</figure>
+<p>MUI Cache에서 응용 프로그램의 경로와, 저장하고 있는 이름을 확인할 수 있음을 확인하였습니다. MUICache에서 저장하고 있는 응용 프로그램의 이름은 영문과 국문 중 1가지를 저장하고 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/mui/mui3.png">
+  <figcaption>MUICacheView 분석 결과 일부(3)</figcaption>
+</figure>
+<p>앞 서 문서에서 서술한 것처럼, MUICache는 응용 프로그램이 분석 시점에 삭제되었더라도 실행 기록을 추적할 수 있습니다. 또한 실행 경로까지 저장하고 있기에 분석 대상 컴퓨터에서 실행되었는지, 혹은 외부 저장장치에서 실행되었는지도 확인할 수 있습니다.</p>
+<figure class="image"><img src="/mui/mui4.png">
+  <figcaption>분석 대상 컴퓨터에 존재하는 파티션</figcaption>
+</figure>
+<p>분석 대상 컴퓨터에서는 C 드라이브 한 가지만이 존재하고 있습니다. 따라서 D 드라이브에서 실행된 Samsung Portable SSD Software Setup은 외부 저장 장치, 혹은 분석 시점에는 제거된 하드 디스크, 드라이브에서 실행되었음을 알 수 있습니다.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Name</td>
+        <td>URL</td>
+        <td>Ver</td>
+      </tr>
+      <tr>
+        <td>MUICacheView</td>
+        <td><a href="https://www.nirsoft.net/utils/muicache_view.html">MUICacheView - Edit/delete MUICache items (nirsoft.net)</a></td>
+        <td>1.01</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/Registry/MUICache/Advanced">/ko/Artifact/Registry/MUICache/Advanced </a>에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>

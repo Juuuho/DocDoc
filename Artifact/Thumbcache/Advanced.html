@@ -1,0 +1,68 @@
+<!--
+title: Advanced
+description: 
+published: true
+date: 2022-11-10T05:38:53.897Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-08T06:49:33.490Z
+-->
+
+<h1>Thumbcache</h1>
+<figure class="image"><img src="/thumbcache/thumbcache1.png">
+  <figcaption>Thumbcache Viewer를 통한 Thumbcache.db 분석 결과 일부(1)</figcaption>
+</figure>
+<p>Thumbcache.db 파일의 경우, 이미지 정보를 jpg, 혹은 png 파일 포맷으로 저장하고 있습니다. 도구를 활용하여 저장된 정보를 확인할 수 있으며, 파일 카빙을 통해 이미지를 직접 추출할 수도 있습니다.</p>
+<p>&nbsp;</p>
+<h2>Thumbcache의 구조</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Position</td>
+        <td>Size</td>
+        <td>Meaning</td>
+      </tr>
+      <tr>
+        <td>0x00 - 0x03</td>
+        <td>4(bytes)</td>
+        <td>Thumbcache의 시그니처. (CMMM)</td>
+      </tr>
+      <tr>
+        <td>0x04 - 0x07</td>
+        <td>4(bytes)</td>
+        <td>Thumbnail의 Entry Size</td>
+      </tr>
+      <tr>
+        <td>0x08 - 0x0F</td>
+        <td>8(bytes)</td>
+        <td>Unique ID</td>
+      </tr>
+      <tr>
+        <td>0x10 - 0x2F</td>
+        <td>32(bytes)</td>
+        <td>UnKnown</td>
+      </tr>
+      <tr>
+        <td>0x30 - 0x41</td>
+        <td>34(bytes)</td>
+        <td>파일 이름</td>
+      </tr>
+      <tr>
+        <td>0x42 -</td>
+        <td>파일의 크기에 따라 다름.</td>
+        <td>Thumbnail의 원본 데이터</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>Thumbacache 파일 카빙</h2>
+<figure class="image"><img src="/thumbcache/thumbcache4.png">
+  <figcaption>Thumbcache.db에서 확인한 PNG의 헤더 시그니처</figcaption>
+</figure>
+<figure class="image"><img src="/thumbcache/thumbache5.png">
+  <figcaption>Thumbcache.db에서 확인한 PNG의 푸터 시그니처</figcaption>
+</figure>
+<p>Thumbcache.db에 저장된 이미지들은 jpg 혹은 png 파일 형식으로 저장되어 있습니다. 따라서 각 파일 확장자 고유의 시그니처를 확인하여 추출한다면 원본 이미지를 확인할 수 있습니다.</p>

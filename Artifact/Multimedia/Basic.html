@@ -1,0 +1,138 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:14:24.349Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-12T15:10:44.455Z
+-->
+
+<h1>Multimedia</h1>
+<p>멀티미디어란 사진, 음성, 동영상, 문자 등의 다양한 정보들을 함께 저장, 표현하는 미디어를 의미합니다.&nbsp;</p>
+<p>분석 방법으로는 기본적인 MetaData를 EXIF를 통해 확인, 인간의 눈으로는 확인할 수 없는 많은 정보들을 은닉해 숨기는 Steganography, 삽입된 Morse code를 분석하는 방법 등이 다양하게 존재합니다.</p>
+<p>&nbsp;</p>
+<h2>EXIF</h2>
+<p>우선 EXIF에 대해 살펴보겠습니다. EXIF는 EXchangable Image File format의 약자로써 이미지 파일 내부에 존재하는 파일의 형식을 의미합니다. 스마트폰, 혹은 디지털 카메라의 제조사에 따라 포함하고 있는 정보는 다르지만 대부분 다음의 정보들을 공통적으로 확인할 수 있습니다.</p>
+<ol>
+  <li>멀티미디어를 촬영한 시각</li>
+  <li>멀티미디어를 촬영한 기기에 관한 정보 (제조사 및 모델 명)</li>
+  <li>멀티미디어 촬영 조건 (초점, 플래시, ISO 감도, 셔터 속도, 조리개 등)</li>
+  <li>저작권 정보</li>
+  <li>위치 정보(GPS)</li>
+  <li>압축 관련 정보</li>
+</ol>
+<p>실제 데이터를 통해 분석을 수행하겠습니다.</p>
+<figure class="image"><img src="/multimedia/kakaotalk_20221128_160646606.jpg">
+  <figcaption>EXIF가 포함된 사진</figcaption>
+</figure>
+<p>EXIF 를 분석하는 방법은 어렵지 않습니다. 기본적으로 정보들이 Plain Text 형태로 파일의 앞 부분에 존재하기에, Hex 값을 살펴본다면 확인할 수 있습니다.&nbsp;</p>
+<figure class="image"><img src="/multimedia/exif5.png"></figure>
+<p>하지만 EXIF 에서 저장하고 있는 정보는 적지 않기에 도구로 분석하는 것을 권장합니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/multimedia/exif2.png">
+  <figcaption>EXIF 분석 결과 (1)</figcaption>
+</figure>
+<p>분석 결과 중 일부를 차례로 살펴보겠습니다. 우선 첫번째로, 사진을 촬영한 기기에 관한 정보입니다. Make와 Model에서 각각 제조사, 모델 명에 대한 정보를 확인하였습니다.</p>
+<figure class="image"><img src="/multimedia/exif3.png">
+  <figcaption>EXIF 분석 결과 (2)</figcaption>
+</figure>
+<p>사진을 촬영한 시각을 확인할 수 있고, UTC 시간 정보 역시도 확인할 수 있습니다.</p>
+<figure class="image"><img src="/multimedia/exif6.png">
+  <figcaption>EXIF 분석 결과 (3)</figcaption>
+</figure>
+<p>사진을 촬영한 장소의 위치 정보를 GPS를 통해 확인할 수도 있습니다.</p>
+<p>&nbsp;</p>
+<h2>Steganography</h2>
+<figure class="image"><img src="/multimedia/1234555.jpg">
+  <figcaption>SteganoGraphy가 적용된 사진</figcaption>
+</figure>
+<p>해당 사진을 육안으로 살펴보았을 때에는 특별히 이상한 점을 확인할 수 없습니다. 하지만 SteganoGraphy를 탐지하는 여러 방법 중 하나인 ELA를 적용한 결과는 다음과 같습니다.</p>
+<figure class="image"><img src="/multimedia/1234.png"></figure>
+<p>사진에 은닉되어 있던 I luv 4rensic을 확인할 수 있습니다. 이처럼 사진에서 표현하는 색상을 육안으로 확인할 수 없을 만큼 미세하게 조정하여 정보를 숨길 수 있습니다.</p>
+<p>스테가노그래피는 이같이 시각적으로 그림을 그려 정보를 은닉하는 방법 뿐만 아니라, LSB (Least Significant BIt)를 변조하여 정보를 숨기는 방법도 존재합니다.</p>
+<p>LSB 변조란, bmp 등의 파일이 색상을 표현하는 방법에 있어 변조를 가해 정보를 은닉하는 방법입니다.</p>
+<figure class="image"><img src="/multimedia/lsb2.png"></figure>
+<p>해당 파일을 HxD로 열어 본다면, 사진에서 표시된 것 처럼 특정한 문자열이 반복됨을 확인할 수 있습니다. 이 때, LSB를 변조하여 정보를 은닉하는 것입니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/multimedia/stegano3.png">
+  <figcaption>.bmp 파일의 RGB 표현</figcaption>
+</figure>
+<p>.bmp 파일은 R / G / B 색상 각각을 8bit로 표현하게 되는데 색상의 변화를 확인하지 못 할 만큼 미세한 수치를 변조하여 정보를 은닉할 수 있습니다.</p>
+<p>&nbsp;</p>
+<p>이 때, 상단의 HxD 분석 결과를 다음과 같이 바라 볼 수 있습니다. 반복 되는 문자열을 잘 살펴본다면, FF와 FE가 반복되고 있습니다. 이 때 FF를 1, FE를 0으로 바라볼 수 있습니다. 현 시점에서는 FE를 1, FF를 0으로 보는 반대의 경우도 가능합니다.</p>
+<p>&nbsp;</p>
+<p>우선, FF를 1, FE를 0으로 바라본 상태로 변환을 수행하였습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="border-bottom:1.0pt solid windowtext;border-left:1.0pt solid windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt solid windowtext;padding:0cm 5.4pt;vertical-align:top;width:450.8pt;">01001101 01010011 00110100 01100111 01010001 00110010 00111001 01110101 01100100 01000111 01000110 01101010 01100100 01000011 01000010 00110000 01100010 01111001 01000001 01111000 01100011 01010100 01001010 00110011 01001101 00110010 01010101 00110000 01100011 01101011 01000010 01101110 01100010 01010111 01000110 01110000 01100010 01000011 00110101 01101010 01100010 00110010 00110000 01001011 01001101 01101001 00110100 01100111 01010001 00110011 01001010 01101000 01100011 00110010 01100111 01100111 01100100 01000111 01101000 01101100 01001001 01000110 01010110 01010100 01010001 01100111 01101111 01111010 01001100 01101001 01000010 01000011 01100011 01101101 01101100 01110101 01011010 01111001 01000010 00110000 01100001 01000111 01010101 01100111 01010100 01010111 00111001 01110101 01011010 01011000 01101011 01100111 01100100 01000111 00111000 01100111 01001101 01111010 01000101 01110111 01001100 01010100 01001101 01110111 01001110 01010001 01101111 00110000 01001100 01101001 01000010 01000101 01011010 01010111 01111000 01101100 01100100 01000111 01010101 01100111 01011010 01101101 01101100 01110011 01011010 01010001 00111101 00111101</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<p>해당 이진수 결과 값을 ASCII 코드에 기반하여 문자열로 변환하였습니다.&nbsp;</p>
+<p>다음은 결과입니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="border-bottom:1.0pt solid windowtext;border-left:1.0pt solid windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt solid windowtext;padding:0cm 5.4pt;vertical-align:top;width:450.8pt;">MS4gQ29udGFjdCB0byAxcTJ3M2U0ckBnbWFpbC5jb20KMi4gQ3Jhc2ggdGhlIFVTQgozLiBCcmluZyB0aGUgTW9u<br>ZXkgdG8gMzEwLTMwNQo0LiBEZWxldGUgZmlsZQ==</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>문자열의 종결이 “==” 으로 되어있음을 알 수 있고, 이는 Base 64에서 흔히 볼 수 있는 Encoding 결과입니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <p>1. Contact to 1q2w3e4r@gmail.com</p>
+          <p>2. Crash the USB</p>
+          <p>3. Bring the Money to 310-305</p>
+          <p>4. Delete file</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>해당 Base 64 문자열을 Decoding 한 결과입니다.</p>
+<ul>
+  <li>FE와 FF 중 어떠한 값을 0과 1로 설정할 지 알 수 없기 때문에, 두 가지 경우를 모두 상정하고 분석을 수행한 후 유의미한 정보가 도출되는 설정을 택해야 합니다.</li>
+</ul>
+<p>&nbsp;</p>
+<p>LSB 변조를 통한 Steganography를 해독하는 과정을 살펴보았습니다.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>도구 명</td>
+        <td>Version</td>
+        <td>URL</td>
+      </tr>
+      <tr>
+        <td>HxD</td>
+        <td>2.5.0.0</td>
+        <td><a href="www.mh-nexus.de">www.mh-nexus.de</a></td>
+      </tr>
+      <tr>
+        <td>EXIF Data Viewer</td>
+        <td>
+          <p style="text-align:center;">-</p>
+        </td>
+        <td><a href="https://exifdata.com/">EXIF Data Viewer</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/Multimedia/Advanced">/ko/Artifact/Multimedia/Advanced </a>에서 확인하실 수 있습니다.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>

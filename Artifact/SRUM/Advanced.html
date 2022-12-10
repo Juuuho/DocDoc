@@ -1,0 +1,157 @@
+<!--
+title: Advanced
+description: 
+published: true
+date: 2022-11-27T12:49:17.893Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-12T14:33:09.960Z
+-->
+
+<h1>Advanced</h1>
+<p>Basic에서는 SRUM이 무엇인지, 확인할 수 있는 정보들의 목록들은 무엇이 있는지 등 기본적인 사항에 대해 살펴보았습니다.</p>
+<p>본 문서에서는 SRUM의 일부 내용을 분석하는 과정을 서술하겠습니다.</p>
+<p>앞 선 Basic에서 SRUM의 분석 결과로는 Network 사용량, CPU 사용량, 에너지 사용량 등을 확인할 수 있음을 알았습니다.</p>
+<p>우선, 그 중 Network 사용량을 분석해보겠습니다. 해당 아티팩트의 분석은 ESEDataBaseView를 사용한 수동 분석과, SRUMECMD 도구를 활용한 분석 2가지 방식으로 수행할 수 있습니다.</p>
+<p>첫 번째로, 수동 분석을 수행해보겠습니다.<br>&nbsp;</p>
+<figure class="image"><img src="/srum/srum6.png" alt="srum6.png">
+  <figcaption>ESEDataBaseView를 통한 분석 결과</figcaption>
+</figure>
+<p><br>SRUM 중, {973F5D5C-1D90-4944-BE8E-24B94231A174}는 Network 사용량을 저장하고 있는 Table 입니다.<br>해당 Table의 열은 다음과 같습니다.</p>
+<ol>
+  <li>AutoIncid : SQL이 데이터를 관리할 때 사용하는 Index 정보 입니다.</li>
+  <li>TimeStamp : 네트워크를 사용한 시간을 의미합니다.</li>
+  <li>AppId : 네트워크를 사용한 응용 프로그램의 식별자 입니다.</li>
+  <li>UserId : 응용 프로그램을 사용한 사용자의 식별자 입니다.</li>
+  <li>Interfaceuid : 응용 프로그램을 사용한 사용자의 네트워크 상 식별자 입니다.</li>
+  <li>L2ProfileId : Network의 SSID입니다. (Layer 2)</li>
+  <li>L2ProfileFlags : Network에서 활용하는 Flags 정보입니다.</li>
+  <li>BytesSent : 응용 프로그램이 전송한 Byte입니다.</li>
+  <li>BytesRecvd : 응용 프로그램이 수신한 Byte입니다.</li>
+</ol>
+<p>&nbsp;</p>
+<p>사진에 표현된 정보를 해석해보겠습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>AutoIncid</td>
+        <td>Timestamp</td>
+        <td>AppId</td>
+        <td>UserId</td>
+        <td>Interfaceuid</td>
+        <td>L2ProfileId</td>
+      </tr>
+      <tr>
+        <td>42517</td>
+        <td>2022-09-28 오전 1:02:00</td>
+        <td>2191</td>
+        <td>6</td>
+        <td>19985273102270464</td>
+        <td>268435472</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>L2ProfileFlags</td>
+        <td>ByteSent</td>
+        <td>BytesRecvd</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>108</td>
+        <td>110</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>해당 열이 .dat 파일에서 관리 될 때 사용되는 Index는 42517 입니다.&nbsp;</p>
+<p>해당 응용 프로그램의 고유 식별자는 2191이며, 네트워크를 통해 정보를 주고받은 시각은 2022-09-28 오전 1:02:00 입니다. 또한 해당 응용 프로그램은 108byte를 전송하였으며, 110byte를 수신하였습니다.</p>
+<p>해당 응용 프로그램은을 사용한 User의 ID는 6이며, 네트워크 상의 식별자는 19985273102270464입니다.</p>
+<p>연결된 네트워크의 SSID는 268435472입니다.</p>
+<figure class="image"><img src="/srum/srum7.png">
+  <figcaption>SRUMECMD를 통한 분석 결과</figcaption>
+</figure>
+<p>SRUMECMD를 통한 분석 결과 역시도 ESEDataBaseView와 동일한 분석 결과가 도출됨을 확인하였습니다.</p>
+<p>&nbsp;</p>
+<p>다음으로, 응용 프로그램의 CPU 사용량에 대해 확인하겠습니다.</p>
+<p>해당 정보는 SRUM의 {D10CA2FE-6FCF-4F6D-848E-B2E99266FA89} 테이블에 저장되어 있습니다.</p>
+<figure class="image"><img src="/srum/srum8.png">
+  <figcaption>ESEDataBaseView를 통한 분석 결과</figcaption>
+</figure>
+<p>앞 선 분석과 동일하게 ESEDataBaseView를 통해 분석하는 과정을 살펴보겠습니다. 상단의 사진은 &nbsp;{D10CA2FE-6FCF-4F6D-848E-B2E99266FA89} 테이블의 일부입니다.</p>
+<p>해당 테이블의 전체 열은 다음과 같습니다.</p>
+<ol>
+  <li>AutoIncId : SQL이 데이터를 관리할 때 사용하는 Index 정보 입니다.</li>
+  <li>TimeStamp : 응용 프로그램이 CPU를 사용한 시간 정보 입니다.</li>
+  <li>AppId : CPU를 사용한 응용 프로그램의 고유 식별자 입니다.</li>
+  <li>UserId : 해당 응용 프로그램을 사용한 사용자의 고유 식별자 입니다.</li>
+  <li>ForegroundCycleTime : &nbsp;응용 프로그램이 CPU를 Foreground에서 사용한 시간입니다.</li>
+  <li>BackgroundCycleTime : &nbsp;응용 프로그램이 CPU를 Background에서 사용한 시간입니다.</li>
+  <li>FaceTime : 응용 프로그램이 Face(Focus를 받은 시간)에 위치한 시간입니다.</li>
+  <li>ForegroundContextSwitches : Foreground에서 Context Switching이 일어난 횟수를 의미합니다.</li>
+  <li>BackgroundContextSwitches : Background에서 Context Switching이 일어난 횟수를 의미합니다.</li>
+  <li>ForegroundBytesRead : 응용 프로그램이 Foreground에서 Byte를 읽은 양을 의미합니다.</li>
+  <li>ForegroundBytesWritten : 응용 프로그램이 Foreground에서 Byte를 쓴 양을 의미합니다.</li>
+  <li>ForegroundNumReadOperations : 응용 프로그램이 Foreground에서 Byte를 읽은 횟수를 의미합니다.</li>
+  <li>ForegroundNumWriteOperations : 응용 프로그램이 Foreground에서 Byte를 쓴 횟수를 의미합니다.</li>
+  <li>ForegroundNumberOfFlushes : 응용 프로그램이 Foreground에서 Flushing을 수행한 횟수를 의미합니다.</li>
+  <li>BackgroundBytesWritten : 응용 프로그램이 Background에서 Byte를 쓴 양을 의미합니다.</li>
+  <li>BackgroundNumReadOperations : 응용 프로그램이 Background에서 Byte를 읽은 횟수를 의미합니다.</li>
+  <li>BackgroundNumWriteOperations : 응용 프로그램이 Background에서 Byte를 쓴 횟수를 의미합니다.</li>
+  <li>BackgroundNumberofFlushes : 응용 프로그램이 Background에서 Flushing을 수행한 횟수를 의미합니다.</li>
+</ol>
+<p>사진에 표현된 정보를 해석하겠습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>AutoIncId</td>
+        <td>TimeStamp&nbsp;</td>
+        <td>AppId&nbsp;</td>
+        <td>UserId&nbsp;</td>
+        <td>ForegroundCycleTime&nbsp;</td>
+      </tr>
+      <tr>
+        <td>246617</td>
+        <td>2022-09-28 오전 11:58:00</td>
+        <td>88</td>
+        <td>16266</td>
+        <td>4339561</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>BackgroundCycleTime&nbsp;</td>
+        <td>FaceTime&nbsp;</td>
+        <td>ForegroundContextSwitches&nbsp;</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>5427297425</td>
+        <td>27</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<p>SRUM.dat에서 해당 열을 관리하는 Index는 246617입니다.</p>
+<p>CPU를 사용한 응용 프로그램의 고유 식별자는 88이며, 2022-09-28 오전 11:58:00에 CPU를 사용했습니다. 응용 프로그램이 Foreground에서 CPU를 사용한 시간은 4339561, Background에서는 사용하지 않았습니다. FaceTime에 노출된 시간은 5427297425이며, Foreground에서 Contextswitching이 수행된 횟수는 27번입니다.</p>
+<p>응용 프로그램을 사용한 사용자의 고유 식별자는 16266입니다.</p>
+<p>이 외의 모든 열( 9 - 18 )은 0을 기록하고 있습니다.</p>
+<figure class="image"><img src="/srum/srum9.png">
+  <figcaption>SRUMECMD를 통한 분석 결과</figcaption>
+</figure>
+<p>앞 선 분석과 동일하게 도구를 사용한 분석 결과도 동일함을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>

@@ -1,0 +1,59 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T11:03:58.189Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-10-11T10:57:55.039Z
+-->
+
+<h1>ShimCache</h1>
+<p>Shimcache는 Windows 운영체제에서 응용 프로그램의 호환성을 관리하는 아티팩트입니다. 응용 프로그램에 호환성 문제가 발생한다면 해당 프로그램은 Shimcache에 기록됩니다.&nbsp;</p>
+<p>여타 아티팩트와 동일하게 원본 파일이 삭제가 되어도, 그 실행 기록을 확인할 수 있는 점에서 유의미한 아티팩트입니다. 특히, Shimcache와 유사하게 응용 프로그램의 실행 기록을 확인할 수 있는 Prefetch와는 달리 한 번 저장된 정보를 삭제하지 않고 관리하는 점이 특징입니다.</p>
+<p>&nbsp;</p>
+<h3>Shimcache 경로</h3>
+<p>기본적인 Shimcache의 경로는 다음과 같습니다.</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\SessionManager\AppCompatCache\AppCompatCahe</p>
+<p>&nbsp;</p>
+<p>다만, 특정한 조건에 따라 Shimcache의 저장 경로가 변동될 수 있습니다.</p>
+<p>1. 호환성 충돌 대화상자에서 사용자가 “이 프로그램이 제대로 설치되었습니다.”를 선택한 경우</p>
+<p>HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store</p>
+<p>2. 응용프로그램 호환성 데이터베이스에 없을 경우 : 호환성 캐시 레지스트리</p>
+<p>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache</p>
+<p>3. 응용프로그램 호환성 해결 설정 : 호환성 모드, 권한 등 설정된 경우</p>
+<p>HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Shimcache의 정보</h2>
+<figure class="image"><img src="/shim/shimcache.png">
+  <figcaption>Shimcache 분석 도구인 &nbsp;AppCompatCacheParser의 분석 결과 일부</figcaption>
+</figure>
+<p>분석 결과를 살펴본다면, 해당 아티팩트를 수집한 경로, 응용 프로그램의 경로, 레지스트리의 마지막 수정 시간 등을 확인할 수 있습니다. 이 때, 레지스트리의 마지막 수정 시각은 해당 응용 프로그램이 마지막으로 호환성 문제가 발생한 시각과 동일합니다.</p>
+<p>분석 결과를 해석해보겠습니다. Taskmgr.exe는 호환성 문제가 발생하였고, 경로는 C:\windows\System32\Taskmgr.exe입니다. 호환성 문제가 발생한 마지막 시각은 2022-07-07 3:17 입니다. (UTC + 0)</p>
+<p>정리한다면, Shimcache에서 확인할 수 있는 정보는 다음과 같습니다.</p>
+<ol>
+  <li>호환성 문제가 발생한 응용 프로그램의 이름</li>
+  <li>호환성 문제가 발생한 응용 프로그램의 경로</li>
+  <li>호환성 문제가 발생한 응용 프로그램의 마지막 실행 시각</li>
+</ol>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>도구</td>
+        <td>버전</td>
+        <td>URL</td>
+      </tr>
+      <tr>
+        <td>AppCompatCache Parser</td>
+        <td>1.5.0.0</td>
+        <td><a href="https://ericzimmerman.github.io/#!index.md">Eric Zimmerman's tools</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>추가 관련 참조</h2>
+<p>더 자세한 <a href="/ko/Artifact/Registry/ShimCache/Advanced">/ko/Artifact/Registry/ShimCache/Advanced</a> 사항은 에서 확인하실 수 있습니다.</p>

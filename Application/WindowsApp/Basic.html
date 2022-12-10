@@ -1,0 +1,147 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-11-30T15:48:19.712Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-29T06:10:53.936Z
+-->
+
+<h1>Basic</h1>
+<p>본 문서에서는 Windows의 기본 응용 프로그램 중 일부에 대해 포렌식 적 관점으로 분석하는 내용을 서술합니다.</p>
+<p>&nbsp;</p>
+<h2>Sticky Notes</h2>
+<p>우선 첫 번째로, Sticky Notes입니다.</p>
+<figure class="image"><img src="/sticky/sticky.png"></figure>
+<p>해당 응용 프로그램은 사용자가 작성한 메모, 사진 등을 저장하고 있으며 간단한 글꼴, 기울임 등 양식등도 설정이 가능합니다.&nbsp;</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/sticky/sticky2.png">
+  <figcaption>Sticky Notes 저장 경로</figcaption>
+</figure>
+<p>Sticky Notes에 저장된 정보는 C:\Users\USER\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\plum.sqlite 에서 확인할 수 있습니다.</p>
+<figure class="image"><img src="/sticky/sticky3.png">
+  <figcaption>plum.sqlite의 Schema 구조</figcaption>
+</figure>
+<p>Plum.sqlite 중 유의미한 정보를 가진 테이블은 Media, Note입니다. 각각에서는 Sticky Notes에 저장된 사진, 문자열에 관한 정보를 확인할 수 있습니다.&nbsp;</p>
+<figure class="image"><img src="/sticky/sticky4.png"></figure>
+<p>그 중, Sticky Notes에 저장된 사진의 경우 C:\Users\USER\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\Media 경로에서 사진 파일을 확인할 수도 있습니다. 다만 이때, 원본 파일의 이름 그대로 저장되는 것이 아닌 Sticky Notes가 임의로 생성한 일련 번호를 저장하게 됩니다. 이 때, 파일의 정보는 그대로 저장됩니다. (Hash값이 동일합니다.)</p>
+<p>다시 Plum.sqlite로 돌아와서, Note 테이블을 분석해보겠습니다.</p>
+<figure class="image"><img src="/sticky/sticky6.png"></figure>
+<p>Text에서는 Sticky Notes의 고유 ID와 함께 작성한 문자열을 확인할 수 있습니다.</p>
+<p>Note 테이블의 구조 중 유의미한 정보를 확인할 수 있는 열은 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Text</td>
+        <td>Note에 작성된 문자열</td>
+      </tr>
+      <tr>
+        <td>WindowPosition</td>
+        <td>Note의 크기</td>
+      </tr>
+      <tr>
+        <td>IsOpen</td>
+        <td>Note의 숨기기 설정 여부</td>
+      </tr>
+      <tr>
+        <td>IsAlwaysOnTop</td>
+        <td>Note의 화면 상단 고정 설정 여부</td>
+      </tr>
+      <tr>
+        <td>Theme</td>
+        <td>Note의 색상</td>
+      </tr>
+      <tr>
+        <td>Id</td>
+        <td>Note 식별 번호</td>
+      </tr>
+      <tr>
+        <td>ParentId</td>
+        <td>작성한 사용자 ID</td>
+      </tr>
+      <tr>
+        <td>CreatedAt</td>
+        <td>Note 생성 시각</td>
+      </tr>
+      <tr>
+        <td>DeletedAt</td>
+        <td>Note 삭제 시각</td>
+      </tr>
+      <tr>
+        <td>UpdatedAt</td>
+        <td>Note 수정 시각</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<figure class="image"><img src="/sticky/sticky8.png">
+  <figcaption>Sticky Note의 시간 정보</figcaption>
+</figure>
+<p>그 중, Created At과 Updated At은 시간을 Microsoft Ticks 형식으로 저장합니다.</p>
+<figure class="image"><img src="/sticky/sticky5.png">
+  <figcaption>Dcode를 통한 확인 결과</figcaption>
+</figure>
+<p>시간 정보를 확인한다면 해당 Notes는 2022-07-02에 작성되었음을 알 수 있습니다.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Clipboard</h2>
+<p>Clipboard는 Windows에서 컴퓨터의 임시 저장 공간으로 사용하기 위해 확보된 메모리 영역을 의미하는데, 복사/붙여넣기 된 부분이 저장됩니다. 다만 휘발성을 띄고 있기에 종료 이후에는 메모리에 저장된 정보를 확인할 수 없습니다.</p>
+<figure class="image"><img src="/clip/clip1.png">
+  <figcaption>Windows - Clipboard 예시</figcaption>
+</figure>
+<p>Clipboard 목록입니다. 사용자가 복사한 목록들을 저장하고 있습니다.</p>
+<figure class="image"><img src="/clip/clip3.png">
+  <figcaption>컴퓨터 재 부팅 이후 클립보드 목록</figcaption>
+</figure>
+<p>앞 서 살펴본 것처럼, Clipboard는 휘발성을 띄고 있어 재부팅 이후에는 종료 이전의 Clipboard 목록을 확인할 수 없습니다. 다만 사용자가 “고정”(Pinned)한 목록은 재부팅 이후에도 확인할 수 있습니다.</p>
+<figure class="image"><img src="/clip/clip5.png">
+  <figcaption>ClipBoard 저장 경로</figcaption>
+</figure>
+<figure class="image"><img src="/clip/clip4.png"></figure>
+<figure class="image"><img src="/clip/clip6.png"></figure>
+<p>&nbsp;</p>
+<p>Clipboard는 C:\Users\%s(사용자&nbsp;계정)\AppData\Local\Microsoft\Windows\Clipboard 경로에서 분석할 수 있습니다. 해당 경로에서 확인할 수 있는 요소들에 대해 살펴보겠습니다.</p>
+<p>각 파일 안에 저장된 정보들은 base64로 Encoding되어 있고,&nbsp;각 파일이 의미하는 바는 다음과 같습니다. 이 때 다음의 파일들은 Clipboard의 성격에 따라 존재 할 수도, 그렇지 않을 수도 있습니다.</p>
+<ol>
+  <li>Locale&nbsp; – TG9jYWxl</li>
+  <li>Text&nbsp; &nbsp; &nbsp; – VGV4dA==</li>
+  <li>Bitmap – Qml0bWFw</li>
+  <li>HTML Format - SFRNTCBGb3JtYXQ=</li>
+  <li>Metadata.json</li>
+</ol>
+<figure class="table">
+  <table style="border-bottom:none;border-left:none;border-right:none;border-top:none;">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1.0pt solid windowtext;border-left:1.0pt solid windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt solid windowtext;padding:0cm 5.4pt;vertical-align:top;width:488.0pt;">{"items":{"{1009F56F-AD46-4267-8BB6-9EBD83CD34F0}":{"timestamp":"2022-09-27T02:20:26Z","source":"Local"},"{261F05EE-6444-48ED-8E1E-6DCDD6987FBE}":{"timestamp":"2022-09-27T02:28:34Z","source":"Local"}}}</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;VGV4dA==(Text)에 저장되어 있는 내용의 경우 DPAPI로 암호화되어 있어 확인할 수 없습니다. 즉 Pinned(고정)되어 있는 Clipboard를 대상으로 분석한다고 하더라도, DPAPI&nbsp;방식으로 암호화되어 있어 평문 상태의 Clipboard&nbsp;내용을 확인하는 것은 불가능합니다.</p>
+<p>&nbsp;</p>
+<h2>분석 도구</h2>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>도구명</td>
+        <td>Version</td>
+        <td>URL</td>
+      </tr>
+      <tr>
+        <td>DB browser for SQLite</td>
+        <td>&nbsp;3.12.2</td>
+        <td>&nbsp;<a href="https://sqlitebrowser.org/">DB Browser for SQLite (sqlitebrowser.org)</a></td>
+      </tr>
+      <tr>
+        <td>&nbsp;Dcode</td>
+        <td>&nbsp;5.5</td>
+        <td><a href="https://www.digital-detective.net/dcode/">DCode™ – Timestamp Decoder - Digital Detective (digital-detective.net)</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

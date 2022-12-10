@@ -1,0 +1,124 @@
+<!--
+title: Basic
+description: 
+published: true
+date: 2022-12-02T10:59:30.166Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-12T14:32:37.210Z
+-->
+
+<h1>SRUM</h1>
+<figure class="image"><img src="/srum/srum2.png"></figure>
+<p>작업 관리자 - 앱 기록을 확인한다면, 응용 프로그램이 CPU, 네트워크, 데이터 통신 등 다양한 자원을 사용한 정보를 확인할 수 있습니다. 해당 정보를 저장하고 있는 아티팩트가 바로 SRUM 입니다. 사용자가 실행한 모든 응용 프로그램, 공격자가 삭제한 응용 프로그램의 이름과 경로, 응용 프로그램의 배터리 사용 기록 등 매우 다양한 정보를 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>SRUM의 경로</h2>
+<p>C:\Windows\System32\sru\SRUDB.dat</p>
+<p>&nbsp; 해당 파일은 Windows ESE 형식으로 저장되어 있어 ESEDatabaseVIew와 같은 도구등을 활용하여 분석할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>SRUM의 구성</h2>
+<p>SRUM은 컴퓨터에서 사용하는 자원에 관한 다양한 정보들을 기록합니다. 하단의 도표는 자원들의 고유 ID와, 해당 ID가 저장하는 정보들을 나타냅니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>&nbsp;Type</td>
+        <td>&nbsp;Meaning</td>
+        <td>Content&nbsp;</td>
+      </tr>
+      <tr>
+        <td>{DD6636C4-8929-4683-974E-22C046A43763}</td>
+        <td>&nbsp;Network Connectivity data</td>
+        <td>
+          <p>1. Interface Type &amp; ID</p>
+          <p>2. Network Profile ID</p>
+          <p>3. Established Time</p>
+          <p>4. Duration Time</p>
+        </td>
+      </tr>
+      <tr>
+        <td>{D10CA2FE-6FCF-4F6D-848E-B2E99266FA89}</td>
+        <td>&nbsp;Application Resource usage data</td>
+        <td>
+          <ol>
+            <li>CPU cycle</li>
+            <li>Context Switching Count</li>
+            <li>Read/Write Operation Counts</li>
+            <li>Fore/Back Ground Usage Time</li>
+            <li>SID</li>
+            <li>I/O Bytes Counts</li>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <td>{973F5D5C-1D90-4944-BE8E-24B94231A174}&nbsp;</td>
+        <td>Network usage data</td>
+        <td>
+          <ol>
+            <li>Interface Type &amp; ID</li>
+            <li>Consumed Data</li>
+            <li>Byte Usage</li>
+            <li>Network Profile ID</li>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <td>{FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}</td>
+        <td>&nbsp;LT Energy usage data</td>
+        <td>
+          <ol>
+            <li>Timestamp</li>
+            <li>ActivatedAcTime</li>
+            <li>Consumed Energy</li>
+            <li>&nbsp;</li>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <td>{D10CA2FE-6FCF-4F6D-848E-B2E99266FA86}&nbsp;</td>
+        <td>Windows Push Notification data</td>
+        <td>
+          <ol>
+            <li>Timestamp</li>
+            <li>AppId</li>
+            <li>UserId</li>
+            <li>PayloadSize</li>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <td>{FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}</td>
+        <td>Energy usage data</td>
+        <td>&nbsp;-</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>이 방법 외에도 전용 분석 도구인 SRUMECMD를 통하여 분석할 수도 있습니다. 해당 분석 도구를 사용한다면 정보의 종류에 따라 csv로 구분하여 결과를 도출할 수 있습니다.</p>
+<figure class="image"><img src="/srum/srum1.png">
+  <figcaption>SRUM 분석 도구인 SRUMECMD.exe를 활용한 SRUM 분석 결과</figcaption>
+</figure>
+<p>각각의 분석 결과에는 Index, Timestamp, 응용 프로그램의 명칭, 실행환경(Local/Network), 사용한 자원량과 사용 시간등이 저장되어 있습니다.</p>
+<p>분석 결과 일부를 살펴보겠습니다. Network 연결 후 주고받은 데이터를 확인할 수 있는 NetworkUsage입니다.</p>
+<figure class="image"><img src="/srum/srum3.png">
+  <figcaption>NetworkUsage 분석 결과 일부</figcaption>
+</figure>
+<p>분석 결과를 확인하면, Index, 네트워크를 연결한 시간, 네트워크와 연결된 응용프로그램의 경로, 사용한 계정 Sid, 주고받은 데이터의 양을 확인할 수 있습니다. 분석 결과에 포함된 응용 프로그램들은 분석 시점에 삭제되어 있더라도 사라지지 않고 Srum에 기록되어 있기에 악성 행위등을 추적함에 유용하게 활용할 수 있습니다.</p>
+<figure class="image"><img src="/srum/srum4.png">
+  <figcaption>Energy Usage 분석 결과 일부</figcaption>
+</figure>
+<p>해당 분석 결과는 컴퓨터의 전원 상태를 보여줍니다. 특정 시점의 전체 배터리 용량, 그 당시의 배터리 충전 상태, 전원이 켜져 있던 상태 등을 확인할 수 있습니다. 이 분석 결과는 Windows의 기본 명령인 Powercfg의 옵션에도 활용됩니다.&nbsp;</p>
+<p>powercfg /batteryreport 명령을 통해서 컴퓨터의 배터리 상태를 나타내는 보고서를 생성할 수 있습니다.</p>
+<figure class="image"><img src="/srum/srum5.png">
+  <figcaption>powercfg /batteryreport 결과</figcaption>
+</figure>
+<p>해당 보고서에는 일정 기간 동안의 노트북 전원의 충전 상태, 사용 시간, 최대 충전 용량 등 배터리에 관한 다양한 정보를 확인할 수 있는데, 해당 보고서는 SRUM을 기반으로 생성됩니다.</p>
+<p>&nbsp;</p>
+<h2>참조</h2>
+<p>더 자세한 사항은 <a href="/ko/Artifact/SRUM/Advanced">/ko/Artifact/SRUM/Advanced </a>에서 확인하실 수 있습니다.</p>
+<ul>
+  <li>Powercfg: <a href="https://learn.microsoft.com/ko-kr/windows-hardware/design/device-experiences/powercfg-command-line-options">Powercfg 명령줄 옵션 | Microsoft Learn</a></li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>

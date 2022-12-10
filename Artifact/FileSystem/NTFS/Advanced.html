@@ -1,0 +1,260 @@
+<!--
+title: Advanced
+description: 
+published: true
+date: 2022-12-01T11:55:17.895Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-10T05:52:01.913Z
+-->
+
+<h1>NTFS</h1>
+<p>본 문서에서는, NTFS 파일 시스템에서 삭제된 파일을 복구하는 과정과, 사용자의 활동을 기록하고 있는 $UsnJrnl, $Logfile, $MFT 등을 분석하는 방법을 서술합니다. 삭제된 파일을 복구하기 위해서는, MBR과 BR, MFT의 영역에 대한 종합적인 이해가 필요합니다.</p>
+<h2>MBR, VBR 분석</h2>
+<p>실제 파일 삭제 과정을 살펴 보며 NTFS 파일 시스템에 대해 이해하는 시간을 가져보겠습니다.</p>
+<figure class="image"><img src="/ntfs/recover-1.png">
+  <figcaption>MBR의 파티션 테이블</figcaption>
+</figure>
+<p>NTFS 파일 시스템의 위치로 이동하기 위해 우선 MBR을 살펴보아야 합니다. MBR의 파티션 테이블을 살펴본다면, 현재 0x100800(Big Endian, 1050624 Sector)위치에 NTFS 파일 시스템이 위치함을 알 수 있습니다.</p>
+<ul>
+  <li>NTFS가 파티션 테이블에서 가지는 값은 0x07입니다.</li>
+</ul>
+<p>&nbsp;</p>
+<figure class="image"><img src="/ntfs/recover0.png">
+  <figcaption>NTFS의 VBR</figcaption>
+</figure>
+<p>해당 섹터로 이동한다면, NTFS의 VBR을 확인할 수 있습니다. 또한 밑줄 친 부분은 NTFS의 MFT 영역의 위치를 나타냅니다. 이 숫자는 클러스터의 수를 의미하기에, 0xAAAA에 8을 곱하여 이동해야 하는 섹터의 위치를 알 수 있습니다. ( 0xAAAA * 8 = 349520)</p>
+<p>다만 이 때, 349520은 NTFS 파일 시스템을 시작점으로 하는 위치입니다. 만일 MBR영역을 포함하여 계산한다면 앞 서 계산한 NTFS의 VBR위치의 값에 MBR의 영역이 위치하는 주소를 더하여 구해야 합니다.</p>
+<ul>
+  <li>NTFS의 MFT 영역 : NTFS의 VBR을 기준으로 하는 주소.</li>
+  <li>따라서, 물리적인 섹터의 위치를 구할 때에는 NTFS의 VBR 주소 + NTFS의 MFT 영역 주소 값 * 8 (MFT영역의 값은 클러스터를 기준으로 저장되어 있습니다.)을 더해야 합니다.</li>
+</ul>
+<figure class="image"><img src="/ntfs/recover-2.png">
+  <figcaption>NTFS의 MFT 영역</figcaption>
+</figure>
+<p>그렇게 계산한 위치로 이동한다면, MFT 영역을 확인할 수 있습니다.</p>
+<figure class="image"><img src="/ntfs/recover4.png">
+  <figcaption>MFT 분석 도구인 NTFS Walker를 활용한 복구</figcaption>
+</figure>
+<p>이 때, 삭제된 파일의 MFT Entry 위치를 구하는 방법은 2가지가 있습니다. MFT Entry의 크기는 1024kb로 고정되어 있기에, 2 섹터 단위로 작성된 Entry를 확인하는 방법과, NTFS Walker를 통한 확인을 할 수 있습니다.</p>
+<p>그림의 경우, 53번 Entry에 위치해 있기에 MFT 영역에 53 * 2 Sector (=106) Sector를 더하여 이동하면 됩니다.</p>
+<figure class="image"><img src="/ntfs/recover1.png">
+  <figcaption>Non-Resident 방식으로 저장된 삭제 파일</figcaption>
+</figure>
+<p>해당 위치로 이동하여, Non-Resident 방식으로 저장된 위치를 해석해보겠습니다. 0x1AA7(Big Endian) Cluster에 위치해 있기에, 이에 8을 곱하여 이동하면 파일의 시작점을 확인할 수 있습니다. 파일의 크기는 0xA682(Big Endian) Byte입니다. 해당 위치로 이동하여 파일의 크기만큼 복사해보겠습니다.</p>
+<figure class="image"><img src="/ntfs/recover2.png"></figure>
+<p>파일을 복사하여 저장한다면 파일이 복구되었음을 알 수 있습니다.</p>
+<figure class="image"><img src="/ntfs/recover3.png"></figure>
+<p>파일이 복구되었습니다.</p>
+<p>&nbsp;</p>
+<p>정리하자면, 파일을 복구하는 방법은 다음과 같습니다.</p>
+<ol>
+  <li>MBR 영역을 확인하여 파일 시스템의 종류와 시작 주소(LBA)를 확인한다.</li>
+  <li>파일 시스템의 VBR로 이동하여 MFT 영역의 시작 주소, Byte Per Sector, Sector per Cluster를 확인한다.(NTFS의 경우)</li>
+  <li>확인한 MFT 영역의 주소에 8을 곱하여, NTFS의 VBR 주소에 더합니다.</li>
+  <li>MFT 영역의 시작점으로 이동하여 삭제된 파일의 MFT Entry를 찾습니다.</li>
+  <li>MFT Entry를 확인한 뒤, 파일이 저장된 위치와 크기를 찾습니다.</li>
+  <li>파일의 저장 위치로 이동하여 파일의 크기만큼을 복사하여 새로 생성합니다.</li>
+  <li>복구가 완료되었습니다.</li>
+</ol>
+<p>&nbsp;</p>
+<h2>$UsnJrnl, $Logfile, $J 분석</h2>
+<p>$UsnJrnl, $Logfile, $J&nbsp;분석을 통해 사용자의 행위를 추정할 수 있습니다. 몇 가지 예를 통해 살펴보겠습니다.</p>
+<p>수집에는 FTK Imager를, 분석에는 NTFS Log Tracker를 활용하였습니다.&nbsp;</p>
+<figure class="image"><img src="/ntfs/ntfs4.png">
+  <figcaption>$LogFile과 $MFT 수집</figcaption>
+</figure>
+<p>이 때, $UsnJrnl 파일은 해당 파일 내부에 $J를 가지고 있습니다. 분석에 있어서는 내부의 $J 파일을 활용해야합니다.</p>
+<figure class="image"><img src="/ntfs/ntfs5.png">
+  <figcaption>$UsnJrnl($J) 수집</figcaption>
+</figure>
+<figure class="image"><img src="/ntfs/ntfs6.png">
+  <figcaption>$UsnJrnl 내부의 $J</figcaption>
+</figure>
+<figure class="image"><img src="/ntfs/ntfs7.png">
+  <figcaption>NTFS Log Tracker 분석</figcaption>
+</figure>
+<p>NTFS Log Tracker에 수집한 파일들을 입력한다면, 도구 분석 결과를 통해 로그를 살펴볼 수 있습니다.</p>
+<figure class="image"><img src="/ntfs/ntfs8.png">
+  <figcaption>NTFS Log Tracker 분석 결과로 도출된 csv 파일</figcaption>
+</figure>
+<p>해당 파일들을 살펴보겠습니다.</p>
+<figure class="image"><img src="/ntfs/ntfs2.png">
+  <figcaption>File의 Renaming 과정 ($UsnJrnl)</figcaption>
+</figure>
+<p>$UsnJrnl 파일을 분석한 결과, 그 중 File_Renaming 과정이 일어났음을 확인하였습니다.</p>
+<figure class="image"><img src="/ntfs/ntfs3.png">
+  <figcaption>파일의 경로 이동 과정 ($Logfile)</figcaption>
+</figure>
+<p>$Logfile 파일을 분석한 결과, 그 중 파일의 경로 이동이 있었음을 확인하였습니다.</p>
+<p>&nbsp;</p>
+<h2>$Logfile 구조 분석</h2>
+<h3>전체 구조</h3>
+<figure class="image"><img src="/ntfs/logfile_영역.png">
+  <figcaption>재시작 영역(Restart Area)과 로깅 영역(Logging Area)</figcaption>
+</figure>
+<p>$Logfile의 구조는 재시작 영역과 로깅 영역으로 나뉩니다.</p>
+<p>각 영역의 구성 단위는 0x1000 크기의 페이지로 구성됩니다.</p>
+<p>&nbsp;</p>
+<h3>재시작 영역</h3>
+<figure class="image"><img src="/ntfs/재시작_영역_포맷.png">
+  <figcaption>재시작 영역 헤더 포멧</figcaption>
+</figure>
+<figure class="image"><img src="/ntfs/rstr.png">
+  <figcaption>재시작 영역 구조 예시</figcaption>
+</figure>
+<p>재시작 영역은 가장 마지막이면서도 현재 작업 중인 작업 레코드를 가리키고 있습니다.</p>
+<p>포맷에서 보시는 Current LSN 정보를 통해 0x30~0x37에 해당되는 9B005B65 hex(little endian)이 가장 마지막 작업 레코드의 LSN 번호임을 알 수 있습니다. &nbsp;</p>
+<p>또한, 재시작 영역은 0x0, 0x1000에 위치하여 연속된 두 페이지로 구성됩니다. 0x1000에 위치하는 두번째 페이지는 백업용으로 사용됩니다.</p>
+<p>&nbsp;</p>
+<h3>로깅 영역</h3>
+<p>로깅 영역은 실제 작업 레코드들이 기록되는 영역입니다.</p>
+<p>버퍼 페이지 영역과 일반 페이지 영역으로 나누어집니다.</p>
+<p>버퍼 페이지 영역은 첫 두 페이지(0x2000 ~ 0x4000)에 구성되어 있으며, 순차적으로 레코드가 기록되고 페이지가 꽉 차면 페이지 내용을 일반 페이지 영역에 기록합니다. 최근 작업 레코드들은 버퍼 페이지 영역에 존재합니다.</p>
+<figure class="image"><img src="/ntfs/로깅_영역.png">
+  <figcaption>버퍼 페이지 영역, 일반 페이지 영역</figcaption>
+</figure>
+<p>&nbsp;</p>
+<h3>페이지 구조</h3>
+<p>페이지는 하나의 헤더와 다수의 작업 레코드들로 구성됩니다. 마지막 레코드가 페이지를 넘어가면 다음 페이지에 이어서 기록됩니다.</p>
+<figure class="image"><img src="/ntfs/rcrd_포맷.png">
+  <figcaption>로깅 영역 헤더 포멧</figcaption>
+</figure>
+<figure class="image"><img src="/ntfs/rcrd.png">
+  <figcaption>로깅 영역 구조 예시</figcaption>
+</figure>
+<p>헤더 내 속성 정보는 다음과 같습니다.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>속성</td>
+        <td>정보</td>
+      </tr>
+      <tr>
+        <td>Magic Number</td>
+        <td>RCRD, 헤더 시그니처</td>
+      </tr>
+      <tr>
+        <td>Last LSN or File Offeset</td>
+        <td>페이지를 넘어가는 레코드를 포함해서 가장 큰 LSN을 의미</td>
+      </tr>
+      <tr>
+        <td>Next Record Offset</td>
+        <td>Last LSN에 해당하는 레코드의 페이지 내 Offset</td>
+      </tr>
+      <tr>
+        <td>Last End LSN</td>
+        <td>페이지를 넘어가지 않는 레코드들 중에 가장 큰 LSN</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3>작업 레코드 구조</h3>
+<p>&nbsp;</p>
+<figure class="image"><img src="/ntfs/작업레코드_포맷.png">
+  <figcaption>작업 레코드 포맷</figcaption>
+</figure>
+<p>&nbsp;</p>
+<figure class="image"><img src="/ntfs/작업_레코드_예시.png">
+  <figcaption>작업 레코드 구조 예시</figcaption>
+</figure>
+<p>작업 레코드 포맷에서 주요 속성에 대한 설명은 다음과 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>This LSN</td>
+        <td>현재 작업 레코드의 LSN</td>
+      </tr>
+      <tr>
+        <td>Previous LSN</td>
+        <td>&nbsp;이전 작업 레코드의 LSN</td>
+      </tr>
+      <tr>
+        <td>Client Undo LSN</td>
+        <td>복구 시, 다음 Undo 작업을 가지고 있는 레코드의 LSN, 보통은 Previous LSN</td>
+      </tr>
+      <tr>
+        <td>Client Data Length</td>
+        <td>레코드의 크기, Redo Op 시작 위치 + Client Data Length = 레코드 끝 offset</td>
+      </tr>
+      <tr>
+        <td>Record Type</td>
+        <td>0x02(CheckPoint), 0x01(그 외 Record)</td>
+      </tr>
+      <tr>
+        <td>Flags</td>
+        <td>0x01(현재 레코드가 페이지를 넘어갈 때), 0x00(현재 레코드가 페이지를 넘어가지 않을 때)</td>
+      </tr>
+      <tr>
+        <td>Redo OP</td>
+        <td>Redo 연산 코드</td>
+      </tr>
+      <tr>
+        <td>Undo OP</td>
+        <td>Undo 연산 코드</td>
+      </tr>
+      <tr>
+        <td>Redo Offset</td>
+        <td>Redo 데이터 시작 Offset(Redo Op 위치부터)</td>
+      </tr>
+      <tr>
+        <td>Redo Length</td>
+        <td>Redo 데이터 길이</td>
+      </tr>
+      <tr>
+        <td>Undo Offset</td>
+        <td>Undo 데이터 시작 Offset(Redo Op 위치부터)</td>
+      </tr>
+      <tr>
+        <td>Undo Length</td>
+        <td>Undo 데이터 길이</td>
+      </tr>
+      <tr>
+        <td>LCNs to Follows</td>
+        <td>0x01(이어지는 레코드가 있을 때), 0x00(이어지는 레코드가 없을 때)</td>
+      </tr>
+      <tr>
+        <td>Record Offset</td>
+        <td>
+          <p>MFT 레코드에 대한 작업 O : &nbsp;Redo/Undo 데이터가 적용되는 속성의 MFT 레코드 내 Offset</p>
+          <p>MFT 레코드에 대한 작업 X : 값은 0x00</p>
+        </td>
+      </tr>
+      <tr>
+        <td>Attr Offset</td>
+        <td>
+          <p>MFT 레코드 작업 O : Redo/Undo 데이터가 적용되는 속성 내 Offset</p>
+          <p>MFT 레코드 작업 X : Redo/Undo 데이터가 적용되는 클러스터 내 Offset</p>
+        </td>
+      </tr>
+      <tr>
+        <td>MFT Cluster Index</td>
+        <td>MFT 엔트리가 있는 하나의 클러스터 내에서 몇 번째 엔트리에 해당되는지에 대한 값<br>1번째(0x0000), 2번째(0x0002), 3번째(0x0003), 4번째(0x0006)</td>
+      </tr>
+      <tr>
+        <td>Target VCN</td>
+        <td>Redo/Undo 데이터가 적용되는 $MFT 상의 VCN(Virtual Cluster Number)</td>
+      </tr>
+      <tr>
+        <td>Target LCN</td>
+        <td>Redo/Undo 데이터가 적용되는 디스크 상의 LCN(Logical Cluster Number)</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<p>추가 작성 예정</p>
+<p>&nbsp;</p>
+<h2>마무리</h2>
+<ul>
+  <li>NTFS 파일 시스템 메타 데이터인 $Logfile, $UsnJrnl, $MFT를 분석하고 삭제된 파일이나 변경된 파일의 원본 파일 복구할 수 있습니다.</li>
+</ul>
+<p>&nbsp;</p>
+<h2>관련 참조</h2>
+<p><a href="http://forensicinsight.org/wp-content/uploads/2013/06/F-INSIGHT-NTFS-Log-TrackerKorean.pdf">http://forensicinsight.org/wp-content/uploads/2013/06/F-INSIGHT-NTFS-Log-TrackerKorean.pdf</a></p>
+<p>&nbsp;</p>

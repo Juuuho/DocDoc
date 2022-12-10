@@ -1,0 +1,148 @@
+<!--
+title: Advanced
+description: 
+published: true
+date: 2022-11-25T06:37:16.287Z
+tags: 
+editor: ckeditor
+dateCreated: 2022-11-14T07:36:04.089Z
+-->
+
+<h1>Recycle.bin</h1>
+<p>- 분석 목적 : 본 문서에서는 파일이 삭제 될 시 어떠한 변화가 발생하는지 설명함을 목적으로 합니다.</p>
+<p>- 분석 환경 : Microsoft Windows 10 Pro</p>
+<p>- Analysis Files :&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Analysis Files</td>
+        <td>Artifacts</td>
+      </tr>
+      <tr>
+        <td>C:\$Recycle.bin</td>
+        <td>Windows.edb</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>- 분석 도구:</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>도구</td>
+        <td>버전</td>
+        <td>URL</td>
+      </tr>
+      <tr>
+        <td>AccessData FTK Imager</td>
+        <td>4.7.1.2</td>
+        <td>https://accessdata.com/product-download/ftk-imager-version-4-7-1</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h2>상세분석</h2>
+<p>본 문서에서는 Recycle.bin을 분석하는 과정을 살펴보고, 파일이 삭제된다면 Recycle.bin 기준으로 어떤 과정이 진행되는지 $MFT, $UsnJrnl. $Logfile를 통해 확인해 봅니다.</p>
+<p>&nbsp;</p>
+<h2>Recycle.bin 분석 과정</h2>
+<figure class="image"><img src="/recyclebin/recyclebin_sid.png">
+  <figcaption>Recycle.bin - SID 폴더 구조</figcaption>
+</figure>
+<p>Basic에서 확인할 수 있듯이 Recycle.bin의 기본 폴더 구조는 위 사진처럼&nbsp;" C:\$Recycle.bin” 경로 아래에 SID 기준으로 사용자가 어떠한 파일을 휴지통에 넣었는지 확인할 수 있습니다.&nbsp;</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recyclebin/recyclebin_sid3.png">
+  <figcaption>Recycle.bin - SID 폴더 추출</figcaption>
+</figure>
+<p>먼저, 분석하고 싶은 사용자의 SID 번호를 확인하여 폴더의 파일을 추출합니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recyclebin/recyclebin_sid4.png">
+  <figcaption>Recycle.bin - SID 폴더의 파일 추출</figcaption>
+</figure>
+<p>위 사진과 같게 추출이 완료되었다면 해당 파일을 RBCmd.exe 툴을 이용해 csv 파일로 만들어 분석을 진행할 수 있습니다. 지금까지 Recycle.bin을 분석하기 위한 방법을 확인했습니다. 다음 단락부터는 Recycle.bin을 거쳐서 삭제했을 때와 Shift+Delete(완전 삭제)를 이용해서 삭제했을 때의 차이를 살펴보겠습니다.</p>
+<p>&nbsp;</p>
+<h2>휴지통 삭제 &amp; 완전 삭제(Shift + Delete)</h2>
+<p>휴지통(Recycle.bin)을 거쳐 삭제되는 과정과 Windows 완전 삭제를 통해 삭제하는 과정은 차이가 있습니다. 차이점을 $MFT, $UsnJrnl, $Logfile을 통해 파악해 봅니다.</p>
+<p>&nbsp;</p>
+<h3>$MFT</h3>
+<p>MFT는 NTFS 파일 시스템이 파일을 관리할 때 사용하는 파일입니다. 관리하는 대상 파일의 상태 등을 Header의 영역에서 관리하는데, 구조를 살펴보면 다음과 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycle_mft1.png">
+  <figcaption>MFT Entry Header 구조</figcaption>
+</figure>
+<p>해당 영역에서, Flags는 파일의 현재 상태를 저장하고 있습니다. 값에 따른 의미는 다음 표와 같습니다.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>Flag 값</td>
+        <td>상태</td>
+      </tr>
+      <tr>
+        <td>0x00</td>
+        <td>해당 MFT Entry는 현재 비할당 상태임을 의미하며, File임을 의미한다.</td>
+      </tr>
+      <tr>
+        <td>0x01</td>
+        <td>해당 MFT Entry는 현재 할당 상태임을 의미하며, File임을 의미한다.</td>
+      </tr>
+      <tr>
+        <td>0x02</td>
+        <td>해당 MFT Entry는 현재 비할당 상태이며, Directory임을 의미한다.</td>
+      </tr>
+      <tr>
+        <td>0x03</td>
+        <td>해당 MFT Entry는 현재 할당 상태이며, Directory임을 의미한다.</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>파일 / 디렉토리가 삭제되는 경우 각각 Flag 영역의 값은 0x01, 0x03으로 변화하여 저장됩니다.</p>
+<p>삭제된 파일/디렉토리의 MFT Entry를 확인한다면, 해당 Flags의 값이 0x00 혹은 0x02임을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycler6_mft.png">
+  <figcaption>사용 중인 파일의 MFT Header</figcaption>
+</figure>
+<p>위의 그림처럼, 사용 중인 파일의 MFT Header를 확인한다면, Flag의 값이 0x01임을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycler6_mft_del.png">
+  <figcaption>삭제된 파일의 MFT Header</figcaption>
+</figure>
+<p>위의 그림처럼, 삭제된 파일의 MFT Header를 확인한다면, Flag의 값이 0x00임을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h3>$UsnJrnl</h3>
+<figure class="image"><img src="/recycle/recycler3.png">
+  <figcaption>파일 삭제(Delete, 휴지통으로 이동) 시 $I와 $R의 생성 과정 - Usnjrnl</figcaption>
+</figure>
+<p>Basic에서 살펴본 것처럼, 기존의 파일명이 $R + 임의의 난수 값으로 바뀌어 파일명이 바뀜을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycler4.png">
+  <figcaption>파일 삭제(Shift + Delete, 즉시 삭제) 시 파일 삭제 과정 - Usnjrnl</figcaption>
+</figure>
+<p>다만 Shift + Delete를 활용해 파일을 삭제할 경우, File이 Renaming되는 과정 없이 즉시 삭제됨을 확인할 수 있습니다. $R과 $I파일은 휴지통을 통해 파일이 관리될 때 생성되므로, 휴지통을 거치지 않고 삭제되는 경우 $R과 $I파일이 생성되지 않습니다.</p>
+<p>&nbsp;</p>
+<h3>$Logfile</h3>
+<figure class="image"><img src="/recycle/recycler2.png">
+  <figcaption>파일 삭제(Delete, 휴지통으로 이동) 시 $I와 $R의 생성 과정 - Logfile</figcaption>
+</figure>
+<p>$UsnJrnl과 마찬가지로, 삭제된 파일은 $I와 $R로 나뉘어 관리되는데 위의 그림처럼 삭제된 파일이 $R과 $I로 나뉘어 관리되는 기록을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<figure class="image"><img src="/recycle/recycler5.png">
+  <figcaption>파일 삭제(Shif + Delete, 즉시 삭제) 시 파일 삭제 과정 - Logfile</figcaption>
+</figure>
+<p>UsnJrnl의 경우와 마찬가지로, Shift + Delete를 활용해 파일을 삭제한 경우 File이 이동하는 과정 없이 즉시 삭제됨을 확인할 수 있습니다.</p>
+<p>&nbsp;</p>
+<h2>마무리</h2>
+<ul>
+  <li>Recycle.bin을 분석하는 방법을 알아봤으며, $MFT, $UsnJrnl, $Logfile을 통해 휴지통(Recycle.bin)을 거쳐서 삭제되는 과정과 Windows 완전 삭제 기능인 “Shift+Delete”를 통해 삭제되는 과정의 차이를 알아봤습니다.</li>
+</ul>
+<p>&nbsp;</p>
+<h2>추가 관련 참조</h2>
+<ul>
+  <li>NTFS: <a href="/ko/Artifact/FileSystem/NTFS/Basic">/ko/Artifact/FileSystem/NTFS/Basic</a></li>
+  <li>Registry: <a href="/ko/Artifact/Registry">/ko/Artifact/Registry</a></li>
+</ul>
+<p>&nbsp;</p>
