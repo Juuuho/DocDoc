@@ -2,7 +2,7 @@
 title: Advanced
 description: Evtx_Windows 로그_Advanced
 published: true
-date: 2022-12-11T10:56:29.814Z
+date: 2022-12-11T11:03:49.704Z
 tags: 
 editor: markdown
 dateCreated: 2022-10-11T11:02:45.475Z
@@ -28,6 +28,20 @@ Application.evtx, Security.evtx, Setup.evtx, System.evtx
 
 ## 응용 프로그램
 
+- **System 복구**
+
+|EventID|설명|
+|-|-|
+|8193|VSS 오류|
+|8194|시스템 복원 지점을 성공적으로 만들었습니다.|
+|8212|예약된 복원 지점을 성공적으로 만들었습니다.|
+|8216|시스템 복원에 사용할 수 있는 최신 복원 지점이 있으므로 복원 지점 만들기를 건너뜁니다.|
+|8224|유휴 시간 제한으로 인해 VSS 서비스를 종료 중입니다.|
+|8225|서비스 제어 관리자의 종료 이벤트로 인해 VSS 서비스를 종료 중입니다.|
+|8300|shadowcopy에 대한 범위 지정을 시작했습니다.|
+|8301|shadowcopy에 대한 범위 지정이 완료되었습니다.|
+|8302|shadowcopy에 대한 범위 지정이 성공적으로 완료되었습니다.|
+|8303|shadowcopy에 대한 범위 지정이 성공적으로 완료되지 않았습니다. error code[]|
 
 ### 상세분석 소단락
 -  소단락은 왼쪽 목차에 안남아서 잘 분리해서 쓰기
