@@ -2,7 +2,7 @@
 title: Advanced
 description: Evtx_Windows 로그_Advanced
 published: true
-date: 2022-12-11T11:03:49.704Z
+date: 2022-12-11T11:05:40.527Z
 tags: 
 editor: markdown
 dateCreated: 2022-10-11T11:02:45.475Z
@@ -42,6 +42,13 @@ Application.evtx, Security.evtx, Setup.evtx, System.evtx
 |8301|shadowcopy에 대한 범위 지정이 완료되었습니다.|
 |8302|shadowcopy에 대한 범위 지정이 성공적으로 완료되었습니다.|
 |8303|shadowcopy에 대한 범위 지정이 성공적으로 완료되지 않았습니다. error code[]|
+
+- **Security-SPP**
+
+|EventID|설명|
+|-|-|
+|16384|time(TZ)에 다시 시작하도록 소프트웨어 보호 서비스를 예약했습니다.|
+|16394|오프라인 하위 마이그레이션에 실패했습니다.|
 
 ### 상세분석 소단락
 -  소단락은 왼쪽 목차에 안남아서 잘 분리해서 쓰기
