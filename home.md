@@ -2,7 +2,7 @@
 title: Main Page
 description: 
 published: true
-date: 2022-12-06T09:30:01.969Z
+date: 2022-12-12T04:11:52.700Z
 tags: 
 editor: markdown
 dateCreated: 2022-10-11T10:22:11.672Z
@@ -14,6 +14,8 @@ dateCreated: 2022-10-11T10:22:11.672Z
 ## DocDoc이란?
 
 DocDoc이란 디지털 포렌식 전반에서 아우를 수 있는 아티팩트에 대한 설명을 기록해놓은 공간입니다.
+
+대부분의 내용들은 Windows 10 기준으로 작성되었습니다.
 
 또한, Datg팀이 제공하는 역량 평가 문제에 대한 피드백 겸용 학습이 가능한 공간입니다.
 
