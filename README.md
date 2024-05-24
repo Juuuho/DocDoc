@@ -1,2 +1,0 @@
-# DocDoc
-Digital Forencis Wiki
